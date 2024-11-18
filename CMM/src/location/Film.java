@@ -9,20 +9,21 @@ import java.util.*;
  * @author Mouad Brahmi
  */
 public class Film {
-
-    /**
-     * Le titre du film.
-     */
+	
+  /**
+   * Le titre du film.
+   */
+	
     private String titre;
-
-    /**
+    
+  /**
      * Le réalisateur du film.
      */
     private Artiste realisateur;
 
-    /**
-     * L'année de réalisation du film .
-     */
+  /**
+   * L'année de réalisation du film .
+   */
     private int annee;
 
     /**
