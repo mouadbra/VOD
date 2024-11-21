@@ -26,12 +26,16 @@ public class Utilisateur {
      * @param info Les informations personnelles de l'utilisateur.
      */
   public Utilisateur(String pseudo, String motDePasse, InformationPersonnelle info) {
+    if (pseudo == null || motDePasse == null || info == null) {
+      throw new IllegalArgumentException("Les arguments pseudo, motDePasse et info"
+      + " ne doivent pas être null.");
+    }
     this.pseudo = pseudo;
     this.motDePasse = motDePasse;
     this.info = info;
     this.filmsEnLocation = new HashSet<>();
-    this.evaluations = new HashSet<>();
     this.historiquefilmsEnLocation = new HashSet<>();
+    this.evaluations = new HashSet<>();
     this.estConnecte = false;
   }
 
@@ -129,26 +133,34 @@ public class Utilisateur {
   }
   
   /**
-     * Ajoute un film à la liste des films en location de l'utilisateur.
-     * Ajoute un film à l'historique des films louer par l'utilisateur.
-     * Limite à un maximum de 3 films en location simultanée.
-     *
-     * @param film Le film à ajouter.
-     * @return true si le film a été ajouté avec succès, false sinon.
-     */
-  
+   * Ajoute un film à la liste des films en location de l'utilisateur.
+   * Ajoute un film à l'historique des films loués par l'utilisateur.
+   * Limite à un maximum de 3 films en location simultanée.
+   * Vérifie que l'utilisateur a l'âge minimum requis pour regarder le film.
+   *
+   * @param film Le film à ajouter.
+   * @return true si le film a été ajouté avec succès, false sinon.
+   */
   public boolean ajouterFilmenLocation(Film film) {
-    if  (filmsEnLocation.contains(film)) {
+    if (this.filmsEnLocation.contains(film)) {
       return false;
     }
 
-    if (filmsEnLocation.size() < 3) { // Limite de 3 films en location
+    // Vérification de l'âge minimum
+    if (this.info.getAge() < film.getAgeLimite()) {
+      return false; // L'utilisateur n'a pas l'âge requis
+    }
+
+    // Limite de 3 films en location simultanée
+    if (this.filmsEnLocation.size() < 3) {
       filmsEnLocation.add(film);
       historiquefilmsEnLocation.add(film);
       return true;
     }
+
     return false;
   }
+
 
   /**
      * Retire un film de la liste des films en location de l'utilisateur.
@@ -167,4 +179,33 @@ public class Utilisateur {
   public void ajouterEvaluation(Evaluation evaluation) {
     evaluations.add(evaluation);
   }
+  /**
+     * supprimer une évaluation à la liste des évaluations de l'utilisateur.
+     *
+     * @param evaluation L'évaluation à supprimer.
+     */
+  
+  public void supprimerEvaluation(Evaluation evaluation) {
+    evaluations.remove(evaluation);
+  }
+    
+    
+  /**
+     * Recherche un evaluqtion par son film.
+     *
+     * @param film Le film evalue par l'utilisateur.
+     * @return evaluation correspondant, ou null si non trouvé.
+     */
+  public Evaluation getEvaluationParFilm(Film film) {
+    for (Evaluation v : evaluations) {
+      if (v.getFilm().equals(film)) {
+        return v;
+      }
+    }
+    return null;
+  
+  }
+  
+  
+  
 }

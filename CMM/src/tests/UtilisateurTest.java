@@ -1,96 +1,182 @@
 package tests;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.HashSet;
+import java.util.Set;
 import location.Artiste;
 import location.Evaluation;
 import location.Film;
 import location.Genre;
 import location.InformationPersonnelle;
 import location.Utilisateur;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.util.Set;
-import java.util.HashSet;
-import static org.junit.jupiter.api.Assertions.*;
+
+
 
 /**
- * Classe de test pour la classe Utilisateur.
+ * Tests unitaires pour la classe Utilisateur.
  */
-public class UtilisateurTest {
-    private Utilisateur utilisateur;
-    private Film film1;
-    private Film film2;
-    private Film film3;
-    private Artiste realisateur;
-    private Set<Genre> genres;
+class UtilisateurTest {
 
-    /**
-     * Méthode d'initialisation avant chaque test.
+  private Utilisateur utilisateur;
+  private InformationPersonnelle infoPersonnelle;
+  private Film filmAccessible;
+  private Film filmNonAccessible;
+  private Film film1;
+  private Film film2;
+  private Film film3;
+  private Film film4;
+  Artiste realisateur; 
+
+  /**
+     * Initialisation des objets avant chaque test.
      */
-    @BeforeEach
-    public void setUp() {
-        InformationPersonnelle info = new InformationPersonnelle("Jane", "Smith", "456 Elm St", 30);
-        utilisateur = new Utilisateur("janesmith", "mypassword", info);
-        
-        realisateur = new Artiste("John"," Doe", null ); // Exemple de création d'un réalisateur
-        genres = new HashSet<>();
-        genres.add(Genre.Action);
-        genres.add(Genre.Drame);
+  @BeforeEach
+  void setUp() {
+    Set<Genre> genres = new HashSet<>();
+    genres.add(Genre.Action);
+    infoPersonnelle = new InformationPersonnelle("Doe",
+    "John", "123 Rue Imaginaire", 15); // Utilisateur de 15 ans
+    utilisateur = new Utilisateur("johnDoe", "password123", infoPersonnelle);
+    realisateur = new Artiste("Spielberg", "Steven", null);
+    filmAccessible = new Film("Film Accessible", 
+    realisateur, 2020, 12, genres); // Âge limite : 12 ans
+    filmNonAccessible = new Film("Film Non Accessible", 
+    realisateur, 2021, 18, genres); // Âge limite : 18 ans
+    film1 = new Film("Film 1", realisateur, 2020, 12, genres);
+    film2 = new Film("Film 2", realisateur, 2020, 12, genres);
+    film3 = new Film("Film 3", realisateur, 2020, 12, genres);
+    film4 = new Film("Film 4", realisateur, 2020, 12, genres);
+  }
 
-        film1 = new Film("Film1", realisateur, 2020, 18, genres);
-        film2 = new Film("Film2", realisateur, 2021, 18, genres);
-        film3 = new Film("Film3", realisateur, 2022, 18, genres);
-    }
-
-    /**
-     * Teste l'ajout de films en location.
+  /**
+     * Test du constructeur avec des arguments valides.
      */
-    @Test
-    public void testAjouterFilmEnLocation() {
-        assertTrue(utilisateur.ajouterFilmenLocation(film1), 
-            "Le film doit être ajouté en location.");
-        assertTrue(utilisateur.ajouterFilmenLocation(film2),
-            "Le film doit être ajouté en location.");
-        assertTrue(utilisateur.ajouterFilmenLocation(film3),
-            "Le film doit être ajouté en location.");
-        assertFalse(utilisateur.ajouterFilmenLocation(new Film("Film4", realisateur, 2022, 18, genres)),
-            "L'ajout d'un quatrième film doit échouer.");
-    }
+  @Test
+  void testConstructeurValide() {
+    assertEquals("johnDoe", utilisateur.getPseudo());
+    assertEquals("password123", utilisateur.getMotDePasse());
+    assertEquals(infoPersonnelle, utilisateur.getInfo());
+    assertTrue(utilisateur.getFilmsEnLocation().isEmpty());
+    assertTrue(utilisateur.getEvaluations().isEmpty());
+    assertFalse(utilisateur.isEstConnecte());
+  }
 
-    /**
-     * Teste le retrait de films de la liste des films en location.
+  /**
+     * Test du constructeur avec un pseudo null.
      */
-    @Test
-    public void testRetirerFilmEnLocation() {
-        utilisateur.ajouterFilmenLocation(film1);
-        utilisateur.retirerFilmEnLocation(film1);
-        assertFalse(utilisateur.getFilmsEnLocation().contains(film1),
-            "Le film ne doit plus être en location.");
-    }
+  @Test
+  void testConstructeurPseudoNull() {
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      new Utilisateur(null, "password123", infoPersonnelle);
+    });
+    assertEquals("Les arguments pseudo, motDePasse et info ne doivent "
+        + "pas être null.", exception.getMessage());
+  }
 
-    /**
-     * Teste l'ajout d'évaluations à un utilisateur.
+  /**
+     * Test du constructeur avec un mot de passe null.
      */
-    @Test
-    public void testAjouterEvaluation() {
-        Evaluation evaluation = new Evaluation(5,"Excellent film!", null,null);
-        utilisateur.ajouterEvaluation(evaluation);
-        assertTrue(utilisateur.getEvaluations().contains(evaluation),
-            "L'évaluation doit être ajoutée.");
-    }
+  @Test
+  void testConstructeurMotDePasseNull() {
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      new Utilisateur("johnDoe", null, infoPersonnelle);
+    });
+    assertEquals("Les arguments pseudo, motDePasse et info "
+        + "ne doivent pas être null.", exception.getMessage());
+  }
 
-    /**
-     * Teste l'historique des films en location.
+  /**
+     * Test du constructeur avec des informations personnelles nulles.
      */
-    @Test
-    public void testGethistoriqueFilmsEnLocation() {
-        utilisateur.ajouterFilmenLocation(film1);
-        utilisateur.ajouterFilmenLocation(film2);
-        Set<Film> historique = utilisateur.gethistoriqueFilmsEnLocation();
-        assertTrue(historique.contains(film1),
-            "L'historique doit contenir le film.");
-        assertTrue(historique.contains(film2),
-            "L'historique doit contenir le film.");
-    }
- }
+  @Test
+  void testConstructeurInfoNull() {
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      new Utilisateur("johnDoe", "password123", null);
+    });
+    assertEquals("Les arguments pseudo, motDePasse et info ne "
+        + "doivent pas être null.", exception.getMessage());
+  }
+
+  /**
+     * Test de l'état de connexion de l'utilisateur.
+     */
+  @Test
+  void testConnexion() {
+    utilisateur.setEstConnecte(true);
+    assertTrue(utilisateur.isEstConnecte());
+
+    utilisateur.setEstConnecte(false);
+    assertFalse(utilisateur.isEstConnecte());
+  }
+
+  /**
+     * Test d'ajout d'un film accessible par âge.
+     */
+  @Test
+    void testAjoutFilmAccessible() {
+    assertTrue(utilisateur.ajouterFilmenLocation(filmAccessible));
+    assertTrue(utilisateur.getFilmsEnLocation().contains(filmAccessible));
+  }
+
+  /**
+     * Test d'ajout d'un film non accessible par âge.
+     */
+  @Test
+  void testAjoutFilmNonAccessible() {
+    assertFalse(utilisateur.ajouterFilmenLocation(filmNonAccessible));
+    assertFalse(utilisateur.getFilmsEnLocation().contains(filmNonAccessible));
+  }
+
+  /**
+     * Test de la limite de 3 films en location.
+     */
+  @Test
+  void testLimiteTroisFilms() {
+    assertTrue(utilisateur.ajouterFilmenLocation(film1));
+    assertTrue(utilisateur.ajouterFilmenLocation(film2));
+    assertTrue(utilisateur.ajouterFilmenLocation(film3));
+
+    // Tentative d'ajouter un quatrième film
+    assertFalse(utilisateur.ajouterFilmenLocation(film4));
+    assertEquals(3, utilisateur.getFilmsEnLocation().size());
+  }
+
+  /**
+     * Test du retrait d'un film de la liste de location.
+     */
+  @Test
+  void testRetirerFilmEnLocation() {
+    utilisateur.ajouterFilmenLocation(film1);
+    utilisateur.ajouterFilmenLocation(film2);
+
+    utilisateur.retirerFilmEnLocation(film1);
+    assertFalse(utilisateur.getFilmsEnLocation().contains(film1));
+    assertTrue(utilisateur.getFilmsEnLocation().contains(film2));
+  }
+
+  /**
+     * Test de l'ajout d'une évaluation.
+     */
+  @Test
+  void testAjoutEvaluation() {
+    Evaluation eval = new Evaluation(5, "Très bon film", utilisateur, film1);
+    utilisateur.ajouterEvaluation(eval);
+    assertTrue(utilisateur.getEvaluations().contains(eval));
+  }
+
+  /**
+     * Test de la modification du mot de passe et du pseudo.
+     */
+  @Test
+  void testModificationMotDePasseEtPseudo() {
+    utilisateur.setMotDePasse("newPassword");
+    utilisateur.setPseudo("newPseudo");
+
+    assertEquals("newPassword", utilisateur.getMotDePasse());
+    assertEquals("newPseudo", utilisateur.getPseudo());
+  }
+}

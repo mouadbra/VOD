@@ -91,6 +91,37 @@ public class GestionUtilisateur {
   public Utilisateur getUtilisateurConnecte() {
     return utilisateurConnecte;
   }
+  
+  
+  
+  
+  /**
+   * Déconnecte l'utilisateur actuellement connecté.
+   *
+   * @throws NonConnecteException si aucun utilisateur n'est connecté.
+   */
+  public void deconnecterUtilisateur() {
+    utilisateurConnecte.setEstConnecte(false); 
+    utilisateurConnecte = null;
+  }
+  
+  
+  
+  /**
+   * Connecte un utilisateur si les informations fournies sont valides.
+   *
+   * @param pseudo Le pseudo de l'utilisateur.
+   * @param mdp Le mot de passe de l'utilisateur.
+   */
+  public void connecterUtilisateur(String pseudo, String mdp)  {
+  
+
+    Utilisateur utilisateur = getUtilisateurParPseudo(pseudo);
+    utilisateurConnecte = utilisateur;
+    utilisateur.setEstConnecte(true);
+  }
+
+
 
   /**
      * Recherche un utilisateur par son pseudo.
@@ -98,7 +129,7 @@ public class GestionUtilisateur {
      * @param pseudo Le pseudo de l'utilisateur.
      * @return L'utilisateur correspondant, ou null si non trouvé.
      */
-  private Utilisateur getUtilisateurParPseudo(String pseudo) {
+  public Utilisateur getUtilisateurParPseudo(String pseudo) {
     for (Utilisateur u : utilisateurs) {
       if (u.getPseudo().equals(pseudo)) {
         return u;

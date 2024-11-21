@@ -8,7 +8,12 @@ package location;
  */
 public class LocationException extends Exception {
 
-  /**
+  public LocationException(String string) {
+		// TODO Auto-generated constructor stub
+	  super(string);
+	}
+
+/**
    * Identifiant de sérialisation.
    */
   private static final long serialVersionUID = -3365565475174636290L;

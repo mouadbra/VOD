@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Set;
+
 /**
  * Classe de test pour la classe GestionUtilisateur.
  */
@@ -20,9 +22,38 @@ public class GestionUtilisateurTest {
   @BeforeEach
     public void setUp() {
     gestionUtilisateur = new GestionUtilisateur();
-    InformationPersonnelle info = new InformationPersonnelle("John", "Doe","123 Main St",25 );
+    InformationPersonnelle info = new InformationPersonnelle("John", "Doe", "123 Main St", 25);
     utilisateur = new Utilisateur("johndoe", "password123", info);
   }
+  
+  
+  /**
+   * Teste la récupération de l'ensemble des utilisateurs.
+   */
+  @Test
+  public void testGetUtilisateurs() {
+    // Vérifier que le système est vide au départ
+    assertTrue(gestionUtilisateur.getUtilisateurs().isEmpty(),
+              "L'ensemble des utilisateurs doit être vide initialement.");
+
+    // Ajouter plusieurs utilisateurs
+    InformationPersonnelle info1 = new InformationPersonnelle("Alice", "Smith", "456 Elm St", 30);
+    InformationPersonnelle info2 = new InformationPersonnelle("Bob", "Johnson", "789 Oak St", 40);
+    Utilisateur utilisateur1 = new Utilisateur("alice123", "passAlice", info1);
+    Utilisateur utilisateur2 = new Utilisateur("bob456", "passBob", info2);
+
+    gestionUtilisateur.ajouteUtilisateur(utilisateur1);
+    gestionUtilisateur.ajouteUtilisateur(utilisateur2);
+
+    // Vérifier que les utilisateurs ajoutés sont dans l'ensemble
+    Set<Utilisateur> utilisateurs = gestionUtilisateur.getUtilisateurs();
+    assertEquals(2, utilisateurs.size(), "L'ensemble des utilisateurs"
+        + " doit contenir 2 utilisateurs.");
+    assertTrue(utilisateurs.contains(utilisateur1), "L'ensemble doit contenir "
+        + "'utilisateur1'.");
+    assertTrue(utilisateurs.contains(utilisateur2), "L'ensemble doit contenir 'utilisateur2'.");
+  }
+
 
   /**
      * Teste l'ajout d'un utilisateur au système.
@@ -33,6 +64,8 @@ public class GestionUtilisateurTest {
          "L'utilisateur doit être ajouté avec succès.");
     assertFalse(gestionUtilisateur.ajouteUtilisateur(utilisateur), 
             "L'utilisateur ne doit pas être ajouté une deuxième fois.");
+    assertFalse(gestionUtilisateur.ajouteUtilisateur(null), 
+            "L'ajout d'un utilisateur null doit échouer.");
   }
 
   /**
@@ -57,6 +90,9 @@ public class GestionUtilisateurTest {
             "Le mot de passe doit être modifié avec succès.");
     assertFalse(gestionUtilisateur.modifieMotDePasse("johndoe", "wrongpass", "newpass"),
             "La modification avec un ancien mot de passe incorrect doit échouer.");
+    assertFalse(gestionUtilisateur.modifieMotDePasse("inexistant", "ancienMotDePasse",
+            "nouveauMotDePasse"),
+            "La modification du mot de passe d'un utilisateur inexistant doit échouer.");
   }
 
   /**
