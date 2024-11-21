@@ -7,23 +7,41 @@ import java.util.Objects;
 /**
  * Classe représentant un artiste (acteur ou réalisateur) avec ses informations
  * personnelles et sa filmographie.
+ *
+ * @author Bouberraga Cherif
  */
 public class Artiste {
 
-    // Attributs
-    private String nom;
-    private String prenom;
-    private String nationalite;
-    private List<Film> filmographie; // Liste des films associés à cet artiste
+  /**
+  * Le nom de l'artiste.
+  */
+  private String nom;
+  /**
+   * Le prenom de l'artiste.
+   */
+  private String prenom;
+  /**
+   * La nationalité de l'artiste.
+   */
+  private String nationalite;
+  /**
+   * La liste des films associés à cet artiste.
+   */
+  private List<Film> filmographie; // Liste des films associés à cet artiste
 
-    // Constructeurs
-    public Artiste(String nom, String prenom, String nationalite) {
-      
-        this.nom = nom;
-        this.prenom = prenom;
-        this.nationalite = nationalite;
-        this.filmographie = new ArrayList<>();
-    }
+  /**
+   * Créer une évaluation avec commentaire.
+   *
+   * @param nom       le nom de l'artiste.
+   * @param prenom le prénom de l'artiste.
+   * @param nationalite la nationalité de l'artiste. 
+   */
+  public Artiste(String nom, String prenom, String nationalite) {  
+    this.nom = nom;
+    this.prenom = prenom;
+    this.nationalite = nationalite;
+    this.filmographie = new ArrayList<>();
+  }
 
     // Getters et Setters
     public String getNom() {
