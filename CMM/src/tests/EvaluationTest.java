@@ -48,74 +48,59 @@ class EvaluationTest {
     utilisateur.setEstConnecte(true);  // L'utilisateur est connecté
     evaluation = new Evaluation(4, utilisateur, film);
     assertNotNull(evaluation, "L'objet Evaluation ne doit pas être null.");
-    assertEquals(utilisateur, evaluation.getUtilisateurPseudo(),
+    assertEquals(utilisateur.getPseudo(), evaluation.getUtilisateurPseudo(),
         "L'utilisateur pseudo doit être correct.");        
     assertEquals(film, evaluation.getFilm(), "Le film associé doit être correct.");
     assertEquals(4, evaluation.getNote(), "La note initiale doit être 4.");
     assertNull(evaluation.getCommentaire(),
         "Le commentaire doit être null lorsqu'il n'est pas fourni.");
   }
-
+  
+  
   /**
-   * Test de l'ajout d'un commentaire par un utilisateur non connecté.
+   * Test du constructeur avec un utilisateur null.
    */
   @Test
-  public void testAjoutCommentaireUtilisateurNonConnecte() {
-    // Cas où l'utilisateur n'est pas connecté
-    utilisateur.setEstConnecte(false);  // L'utilisateur n'est pas connecté
-
-    // Tentative de création de l'évaluation
-    Exception exception = assertThrows(IllegalStateException.class,
-        () -> new Evaluation(4, "Très bon film!", utilisateur, film),
-        "Un utilisateur non connecté ne devrait pas pouvoir ajouter un commentaire."
-        );
-
-    // Vérification du message d'exception
-    assertEquals("L'utilisateur doit être connecté pour ajouter un commentaire.",
-        exception.getMessage());
+  void testConstructeurUtilisateurNull() {
+    Exception exception = assertThrows(NullPointerException.class, () -> {
+      new Evaluation(3, "Bon film", null, film);
+    });
+    assertEquals("L'utilisateur ne doit pas être null.", exception.getMessage());
   }
 
   /**
-   * Test de l'ajout d'un commentaire pour un film non loué.
+   * Test du constructeur avec un film null.
    */
   @Test
-  public void testAjoutCommentaireFilmNonLoue() {
-    // Connexion de l'utilisateur
-    utilisateur.setEstConnecte(true);  // L'utilisateur est connecté
-
-    // Tentative de création de l'évaluation pour un film non loué
-    Exception exception = assertThrows(IllegalStateException.class,
-        () -> new Evaluation(4, "Super film !", utilisateur, film),
-         "Le film doit être dans l'historique des films loués pour ajouter un commentaire."
-        );
-
-    // Vérification du message d'exception
-    assertEquals("Le film doit être dans l'historique des films loués pour ajouter un commentaire.",
-        exception.getMessage());
+  void testConstructeurFilmNull() {
+    Exception exception = assertThrows(NullPointerException.class, () -> {
+      new Evaluation(3, "Bon film", utilisateur, null);
+    });
+    assertEquals("Le film ne doit pas être null.", exception.getMessage());
   }
 
   /**
-   * Test de l'ajout d'un commentaire dans des conditions valides.
+   * Test du constructeur avec une note inférieure à 0.
    */
   @Test
-  public void testAjoutCommentaireConditionsValides() {
-    // Connexion de l'utilisateur
-    utilisateur.setEstConnecte(true);  // L'utilisateur est connecté
-
-    // L'utilisateur loue un film
-    utilisateur.ajouterFilmenLocation(film);  // Ajouter le film à la location
-
-    // Création de l'évaluation pour le film
-    evaluation = new Evaluation(4, utilisateur, film);
-
-    // Ajouter un commentaire pour le film
-    evaluation.setCommentaire("4 films 4 classiques !");
-
-    // Vérification
-    assertEquals("Un classique intemporel !", evaluation.getCommentaire(),
-        "Le commentaire doit être ajouté correctement "
-        + "lorsque toutes les conditions sont remplies.");
+  void testConstructeurNoteNegative() {
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      new Evaluation(-1, utilisateur, film);
+    });
+    assertEquals("La note doit être entre 0 et 5.", exception.getMessage());
   }
+
+  /**
+   * Test du constructeur avec une note supérieure à 5.
+   */
+  @Test
+  void testConstructeurNoteExcessive() {
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      new Evaluation(6, utilisateur, film);
+    });
+    assertEquals("La note doit être entre 0 et 5.", exception.getMessage());
+  }
+
 
   /**
    * Test de la validation de la note, elle doit être entre 0 et 5.

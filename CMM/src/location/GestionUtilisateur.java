@@ -110,13 +110,10 @@ public class GestionUtilisateur {
   /**
    * Connecte un utilisateur si les informations fournies sont valides.
    *
-   * @param pseudo Le pseudo de l'utilisateur.
-   * @param mdp Le mot de passe de l'utilisateur.
+   * @param utilisateur Le utilisateur concerne par la connexion.
+   * 
    */
-  public void connecterUtilisateur(String pseudo, String mdp)  {
-  
-
-    Utilisateur utilisateur = getUtilisateurParPseudo(pseudo);
+  public void connecterUtilisateur(Utilisateur utilisateur)  {
     utilisateurConnecte = utilisateur;
     utilisateur.setEstConnecte(true);
   }

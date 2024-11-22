@@ -1,6 +1,9 @@
 package tests;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,12 +26,8 @@ class UtilisateurTest {
 
   private Utilisateur utilisateur;
   private InformationPersonnelle infoPersonnelle;
-  private Film filmAccessible;
-  private Film filmNonAccessible;
   private Film film1;
   private Film film2;
-  private Film film3;
-  private Film film4;
   Artiste realisateur; 
 
   /**
@@ -42,14 +41,8 @@ class UtilisateurTest {
     "John", "123 Rue Imaginaire", 15); // Utilisateur de 15 ans
     utilisateur = new Utilisateur("johnDoe", "password123", infoPersonnelle);
     realisateur = new Artiste("Spielberg", "Steven", null);
-    filmAccessible = new Film("Film Accessible", 
-    realisateur, 2020, 12, genres); // Âge limite : 12 ans
-    filmNonAccessible = new Film("Film Non Accessible", 
-    realisateur, 2021, 18, genres); // Âge limite : 18 ans
     film1 = new Film("Film 1", realisateur, 2020, 12, genres);
     film2 = new Film("Film 2", realisateur, 2020, 12, genres);
-    film3 = new Film("Film 3", realisateur, 2020, 12, genres);
-    film4 = new Film("Film 4", realisateur, 2020, 12, genres);
   }
 
   /**
@@ -114,36 +107,20 @@ class UtilisateurTest {
   }
 
   /**
-     * Test d'ajout d'un film accessible par âge.
-     */
+   * Test de l'ajoute de film.
+   */
+
   @Test
-    void testAjoutFilmAccessible() {
-    assertTrue(utilisateur.ajouterFilmenLocation(filmAccessible));
-    assertTrue(utilisateur.getFilmsEnLocation().contains(filmAccessible));
+  void testAjouterFilmenLocation() {
+    utilisateur.ajouterFilmenLocation(film1);
+
+    // Vérification après ajout
+    assertTrue(utilisateur.getFilmsEnLocation().contains(film1),
+          "Le film doit être ajouté à la liste des films en location.");
+    assertTrue(utilisateur.gethistoriqueFilmsEnLocation().contains(film1),
+          "Le film doit être ajouté à l'historique des films loués.");
   }
 
-  /**
-     * Test d'ajout d'un film non accessible par âge.
-     */
-  @Test
-  void testAjoutFilmNonAccessible() {
-    assertFalse(utilisateur.ajouterFilmenLocation(filmNonAccessible));
-    assertFalse(utilisateur.getFilmsEnLocation().contains(filmNonAccessible));
-  }
-
-  /**
-     * Test de la limite de 3 films en location.
-     */
-  @Test
-  void testLimiteTroisFilms() {
-    assertTrue(utilisateur.ajouterFilmenLocation(film1));
-    assertTrue(utilisateur.ajouterFilmenLocation(film2));
-    assertTrue(utilisateur.ajouterFilmenLocation(film3));
-
-    // Tentative d'ajouter un quatrième film
-    assertFalse(utilisateur.ajouterFilmenLocation(film4));
-    assertEquals(3, utilisateur.getFilmsEnLocation().size());
-  }
 
   /**
      * Test du retrait d'un film de la liste de location.

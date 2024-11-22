@@ -1,13 +1,20 @@
 package tests;
 
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Set;
 import location.GestionUtilisateur;
 import location.InformationPersonnelle;
 import location.Utilisateur;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Set;
+
+
 
 /**
  * Classe de test pour la classe GestionUtilisateur.
@@ -106,4 +113,46 @@ public class GestionUtilisateurTest {
     assertFalse(gestionUtilisateur.estPseudoExistant("janedoe"),
             "Le pseudo ne doit pas exister.");
   }
+  
+
+  /**
+   * Teste connexion utilisateur.
+   */
+  
+  @Test
+  public void testConnecterUtilisateur() {
+    InformationPersonnelle info = new InformationPersonnelle("John", "Doe", "123 Main St", 25);
+
+    Utilisateur utilisateur = new Utilisateur("johndoe", "password123", info);
+      
+    gestionUtilisateur.connecterUtilisateur(utilisateur);
+
+    assertTrue(utilisateur.isEstConnecte(), "L'utilisateur doit être marqué comme connecté.");
+
+    assertEquals(utilisateur, gestionUtilisateur.getUtilisateurConnecte(), 
+              "L'utilisateur connecté doit être celui fourni à la méthode.");
+  }
+
+  /**
+   * Teste deconnexion utilisateur.
+   */
+  
+  @Test
+  public void testDeconnecterUtilisateur() {
+    InformationPersonnelle info = new InformationPersonnelle("John", "Doe", "123 Main St", 25);
+
+    Utilisateur utilisateur = new Utilisateur("johndoe", "password123", info);
+
+    gestionUtilisateur.connecterUtilisateur(utilisateur);
+
+    gestionUtilisateur.deconnecterUtilisateur();
+
+    assertFalse(utilisateur.isEstConnecte(), "L'utilisateur doit être marqué comme déconnecté.");
+
+    assertNull(gestionUtilisateur.getUtilisateurConnecte(), 
+              "Aucun utilisateur ne doit être connecté après la déconnexion.");
+  }
+
+ 
+ 
 }

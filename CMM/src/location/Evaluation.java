@@ -36,14 +36,12 @@ public class Evaluation {
    * @param film   le film déjà créé dans la classe Film 
    */
   public Evaluation(int note, String commentaire, Utilisateur utilis, Film film) {
-    if (!utilis.isEstConnecte()) {
-      throw new IllegalStateException(
-"L'utilisateur doit être connecté pour ajouter un commentaire.");
+
+    if (utilis == null) {
+      throw new NullPointerException("L'utilisateur ne doit pas être null.");
     }
-        
-    if (!utilis.gethistoriqueFilmsEnLocation().contains(film)) {
-      throw new IllegalStateException(
-"Le film doit être dans l'historique des films loués pour ajouter un commentaire.");
+    if (film == null) {
+      throw new NullPointerException("Le film ne doit pas être null.");
     }
     if (note < 0 || note > 5) {
       throw new IllegalArgumentException("La note doit être entre 0 et 5.");
@@ -64,20 +62,21 @@ public class Evaluation {
    * @param film   le film que l'utilisateur veut evaluer et/ou ajouter un commentaire.
    */
   public Evaluation(int note, Utilisateur utilis, Film film) {
-    if (!utilis.isEstConnecte()) {
-      throw new IllegalStateException(
-"L'utilisateur doit être connecté pour ajouter une évaluation.");
+    if (utilis == null) {
+      throw new NullPointerException("L'utilisateur ne doit pas être null.");
     }
-        
-    if (!utilis.gethistoriqueFilmsEnLocation().contains(film)) {
-      throw new IllegalStateException(
-"Le film doit être dans l'historique des films loués pour ajouter une evaluation.");
+    if (film == null) {
+      throw new NullPointerException("Le film ne doit pas être null.");
+    }
+
+    if (note < 0 || note > 5) {
+      throw new IllegalArgumentException("La note doit être entre 0 et 5.");
     }
 
     this.note = note;
     this.utilis = utilis;
     this.film = film;
-    this.commentaire = "";  // commentaire vide par défaut
+    this.commentaire = null;  // commentaire vide par défaut
   }
   
   /**
@@ -96,6 +95,9 @@ public class Evaluation {
    */
   
   public void setNote(int note) {
+    if (note < 0 || note > 5) {
+      throw new IllegalArgumentException("La note doit être entre 0 et 5.");
+    }
     this.note = note;
   }
   /**

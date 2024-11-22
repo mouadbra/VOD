@@ -135,30 +135,14 @@ public class Utilisateur {
   /**
    * Ajoute un film à la liste des films en location de l'utilisateur.
    * Ajoute un film à l'historique des films loués par l'utilisateur.
-   * Limite à un maximum de 3 films en location simultanée.
-   * Vérifie que l'utilisateur a l'âge minimum requis pour regarder le film.
    *
    * @param film Le film à ajouter.
-   * @return true si le film a été ajouté avec succès, false sinon.
    */
-  public boolean ajouterFilmenLocation(Film film) {
-    if (this.filmsEnLocation.contains(film)) {
-      return false;
-    }
+  public void ajouterFilmenLocation(Film film) {
 
-    // Vérification de l'âge minimum
-    if (this.info.getAge() < film.getAgeLimite()) {
-      return false; // L'utilisateur n'a pas l'âge requis
-    }
+    filmsEnLocation.add(film);
+    historiquefilmsEnLocation.add(film);
 
-    // Limite de 3 films en location simultanée
-    if (this.filmsEnLocation.size() < 3) {
-      filmsEnLocation.add(film);
-      historiquefilmsEnLocation.add(film);
-      return true;
-    }
-
-    return false;
   }
 
 
