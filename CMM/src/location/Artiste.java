@@ -40,87 +40,116 @@ public class Artiste {
     this.nom = nom;
     this.prenom = prenom;
     this.nationalite = nationalite;
-    this.filmographie = new ArrayList<>();
+    this.filmographie = new ArrayList<>(); // une liste initialisée vide.
   }
 
-    // Getters et Setters
-    public String getNom() {
-        return nom;
-    }
+  /**
+ * Renvoie le nom de l'artiste.
+ *
+ * @return le nom de l'artiste.
+ */
+  public String getNom() {
+    return nom;
+  }
 
-    public void setNom(String nom) {
-        if (nom != null && !nom.isEmpty()) {
-            this.nom = nom;
-        }
+  /**
+   * Met à jour du nom ajouté de l'artiste.
+   *
+   * @param nom le nouveau nom modifié de l'artiste.
+   */
+  public void setNom(String nom) {
+    if (nom != null && !nom.isEmpty()) {
+      this.nom = nom;
     }
+  }
 
-    public String getPrenom() {
-        return prenom;
-    }
+  /**
+   * Renvoie le prénom de l'artiste.
+   *
+   * @return le prénom de l'artiste.
+   */
+  public String getPrenom() {
+    return prenom;
+  }
 
-    public void setPrenom(String prenom) {
-        if (prenom != null) {
-            this.prenom = prenom;
-        }
+  /**
+   * Met à jour du prenom de l'artiste ajouté.
+   *
+   * @param prenom le nouveau nom de l'artiste modifié.
+   */
+  public void setPrenom(String prenom) {
+    if (prenom != null) {       
+      this.prenom = prenom;
     }
+  }
 
-    public String getNationalite() {
-        return nationalite;
-    }
+  /**
+   * Renvoie la nationalité de l'artiste.
+   *
+   * @return la nationalité de l'artiste.
+   */
+  public String getNationalite() {
+    return nationalite;
+  }
 
-    public void setNationalite(String nationalite) {
-        if (nationalite != null && !nationalite.isEmpty()) {
-            this.nationalite = nationalite;
-        }
+  /**
+   * Met à jour de la nationalité de l'artiste ajoutée.
+   *
+   * @param nationalite la nouvelle nationalité modifié.
+   */
+  public void setNationalite(String nationalite) {
+    if (nationalite != null && !nationalite.isEmpty()) {
+      this.nationalite = nationalite;
     }
+  }
 
-    public List<Film> getFilmographie() {
-        return new ArrayList<>(filmographie); // Retourne une copie pour éviter la modification externe
-    }
+  public List<Film> getFilmographie() {
+    return new ArrayList<>(filmographie); // Retourne une copie pour éviter la modification externe
+  }
 
-    // Méthodes
-    /**
-     * Ajoute un film à la filmographie de l'artiste.
-     *
-     * @param film Le film à ajouter
-     */
-    public void ajouterFilm(Film film) {
-        if (film != null && !filmographie.contains(film)) {
-            filmographie.add(film);
-        }
+  // Méthodes
+  /**
+   * Ajoute un film à la filmographie de l'artiste.
+   *
+   * @param film Le film à ajouter
+   */
+  public void ajouterFilm(Film film) {
+    if (film != null && !filmographie.contains(film)) {
+      filmographie.add(film);
     }
+  }
 
   
 
   
 
-    // Redéfinitions
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        Artiste artiste = (Artiste) obj;
-        return Objects.equals(nom, artiste.nom) &&
-               Objects.equals(prenom, artiste.prenom) &&
-               Objects.equals(nationalite, artiste.nationalite);
+  // Redéfinitions
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
     }
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+    Artiste artiste = (Artiste) obj;
+    return Objects.equals(nom, artiste.nom) && Objects.equals(prenom, artiste.prenom) 
+      && Objects.equals(nationalite, artiste.nationalite);	
+               
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(nom, prenom, nationalite);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(nom, prenom, nationalite);
+  }
 
-    @Override
-    public String toString() {
-        return "Artiste{" +
-               "nom='" + nom + '\'' +
-               ", prenom='" + prenom + '\'' +
-               ", nationalite='" + nationalite + '\'' +
-               ", filmographie=" + filmographie +
-               '}';
-    }
+  @Override
+  public String toString() {
+    return "Artiste{" 
+            + "nom='" + nom + '\'' 
+            + ", prenom='" + prenom + '\'' 
+            + ", nationalite='" + nationalite + '\'' 
+            + ", filmographie=" + filmographie 
+           +  '}';
+  }
 }
