@@ -1,14 +1,18 @@
 package tests;
 
-import org.junit.jupiter.api.*;
-
 import location.Artiste;
 import location.Evaluation;
 import location.Film;
 import location.Genre;
 import location.Utilisateur;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
+
 import java.util.*;
+import org.junit.jupiter.api.*;
+
 
 /**
  * Test unitaires de la classe Film.
@@ -150,15 +154,87 @@ public class FilmTest {
    */
   @Test
   void testCalculMoyenneEval() {
-      // Test avec liste vide
-      Assertions.assertEquals(0, film.calculmoyenneEval());
+    // Test avec liste vide
+    Assertions.assertEquals(0, film.calculmoyenneEval());
       
-      // Ajout d'évaluations
-      film.getEvaluations().add(new Evaluation(4, "Très bon film",this.utilis,this.film));
-      film.getEvaluations().add(new Evaluation(5, "Excellent",this.utilis,this.film));
-      film.getEvaluations().add(new Evaluation(3, "Moyen",this.utilis,this.film));
+    // Ajout d'évaluations
+    film.getEvaluations().add(new Evaluation(4, "Très bon film", this.utilis, this.film));
+    film.getEvaluations().add(new Evaluation(5, "Excellent", this.utilis, this.film));
+    film.getEvaluations().add(new Evaluation(3, "Moyen", this.utilis, this.film));
       
-      // Test avec évaluations (4 + 5 + 3) / 3 = 4
-      Assertions.assertEquals(4.0, film.calculmoyenneEval());
+    // Test avec évaluations (4 + 5 + 3) / 3 = 4
+    Assertions.assertEquals(4.0, film.calculmoyenneEval());
   }
+  
+  
+  
+  
+  
+  @Test
+  void testSetAfficheValidValue() {
+    // Création d'un film avec des paramètres valides
+    Film film = new Film("Inception", new Artiste("chris", "nolan", "americain"), 2010, 13, Set.of(Genre.Action));
+      
+    // Définition d'une affiche valide
+    String afficheValide = "inception.jpg";
+    film.setAffiche(afficheValide);
+
+    // Vérification que l'affiche est bien définie
+    assertEquals(afficheValide, film.getAffiche());
+  }
+
+  @Test
+  void testSetAfficheNullValue() {
+    // Création d'un film avec des paramètres valides
+    Film film = new Film("Inception", new Artiste("chris", "nolan", "americain"), 2010, 13, Set.of(Genre.Action));
+      
+    // Test avec une valeur null
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      film.setAffiche(null);
+    });
+
+    // Vérification du message d'exception
+    assertEquals("L'affiche ne peut pas être vide ou nulle.", exception.getMessage());
+  }
+
+  @Test
+  void testSetAfficheEmptyValue() {
+    // Création d'un film avec des paramètres valides
+    Film film = new Film("Inception", new Artiste("chris","nolan", "americain"), 2010, 13, Set.of(Genre.Action));
+      
+      // Test avec une chaîne vide
+      Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        film.setAffiche("");
+      });
+
+    // Vérification du message d'exception
+    assertEquals("L'affiche ne peut pas être vide ou nulle.", exception.getMessage());
+  }
+
+  @Test
+  void testSetAfficheWhitespaceOnlyValue() {
+    // Création d'un film avec des paramètres valides
+    Film film = new Film("Inception", new Artiste("chris", "nolan", "americain"), 2010, 13, Set.of(Genre.Action));
+      
+    // Test avec une chaîne composée uniquement d'espaces
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      film.setAffiche("   ");
+    });
+
+    // Vérification du message d'exception
+    assertEquals("L'affiche ne peut pas être vide ou nulle.", exception.getMessage());
+  }
+
+  @Test
+  void testGetAfficheDefaultValue() {
+    // Création d'un film sans définir l'affiche
+    Film film = new Film("Inception", new Artiste("chris","nolan", "americain"), 2010, 13, Set.of(Genre.Action));
+      
+    // Vérification que l'affiche est initialement null
+    assertNull(film.getAffiche());
+  }
+  
+  
+  
+  
 }

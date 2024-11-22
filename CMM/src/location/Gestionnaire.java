@@ -1,5 +1,6 @@
 package location;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class Gestionnaire implements InterUtilisateur {
@@ -116,12 +117,16 @@ public class Gestionnaire implements InterUtilisateur {
 
 	@Override
 	public Set<Film> filmsEnLocation() throws NonConnecteException {
-		 // Vérifie si un utilisateur est connecté
-	    if (gestionUtilisateur.getUtilisateurConnecte() == null) {
+	    // Vérifie si un utilisateur est connecté
+	    Utilisateur utilisateurConnecte = gestionUtilisateur.getUtilisateurConnecte();
+	    if (utilisateurConnecte == null) {
 	        throw new NonConnecteException("Aucun utilisateur n'est connecté.");
 	    }
-	    
+
+	    // Retourne les films en location par l'utilisateur connecté
+	    return new HashSet<>(utilisateurConnecte.getFilmsEnLocation());
 	}
+
 
 	public void ajouterEvaluation(Film film, Evaluation eval) throws NonConnecteException, LocationException {
         Utilisateur utilisateurConnecte = gestionUtilisateur.getUtilisateurConnecte();
@@ -140,7 +145,7 @@ public class Gestionnaire implements InterUtilisateur {
         	}
         }
         utilisateurConnecte.ajouterEvaluation(eval);
-        film.ajouterEvaluation(utilisateurConnecte, film, eval);
+        film.ajouterEvaluation(utilisateurConnecte, eval);
     }
      
 	
@@ -166,101 +171,262 @@ public class Gestionnaire implements InterUtilisateur {
 	        ajouterEvaluation(film, eval);
 	        
 	    }
+	 
+	 
+	 
+  /**
+   * Renvoie l'ensemble des films.
+   *
+   * @return l'ensemble des films ou <code>null</code> si aucun film n'existe
+   */
+  @Override
+  public Set<Film> ensembleFilms() {
+    return gestionFilm.ensembleFilms();
+  }
 
-	@Override
-	public Set<Film> ensembleFilms() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  
+  
+  /**
+   * Renvoie l'ensemble des acteurs.
+   *
+   * @return l'ensemble des acteurs ou <code>null</code> si aucun acteur
+   *         n'existe
+   */
+  @Override
+  public Set<Artiste> ensembleActeurs() {
+    Set<Artiste> acteurs = gestionFilm.ensembleActeurs();
+    return (acteurs == null || acteurs.isEmpty()) ? null : new HashSet<>(acteurs);
+  }
+  /**
+   * Renvoie l'ensemble des réalisateurs.
+   *
+   * @return l'ensemble des réalisateurs ou <code>null</code> si aucun
+   *         réalisateur n'existe
+   */
+  
+  @Override
+  public Set<Artiste> ensembleRealisateurs() {
+    Set<Artiste> realisateurs = gestionFilm.ensembleRealisateurs();
+    return (realisateurs == null || realisateurs.isEmpty()) ? null : new HashSet<>(realisateurs);
+  }
 
-	@Override
-	public Set<Artiste> ensembleActeurs() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  /**
+   * Cherche un acteur à partir de son nom et son prénom.
+   *
+   * @param nom le nom de l'acteur
+   * @param prenom le prénom de l'acteur
+   * @return l'acteur s'il a été trouvé ou <code>null</code> sinon
+   */
+  
+  @Override
+  public Artiste getActeur(String nom, String prenom) {
+    if (nom == null || nom.trim().isEmpty() || prenom == null || prenom.trim().isEmpty()) {
+      return null; // Paramètres invalides
+    }
+    return gestionFilm.getActeur(nom, prenom);
+  }
 
-	@Override
-	public Set<Artiste> ensembleRealisateurs() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  /**
+   * Cherche un réalisateur à partir de son nom et son prénom.
+   *
+   * @param nom le nom du réalisateur
+   * @param prenom le prénom du réalisateur
+   * @return le réalisateur s'il a été trouvé ou <code>null</code> sinon
+   */
+  
+  @Override
+  public Artiste getRealisateur(String nom, String prenom) {
+    if (nom == null || nom.trim().isEmpty() || prenom == null || prenom.trim().isEmpty()) {
+      return null; // Paramètres invalides
+    }
+    return gestionFilm.getRealisateur(nom, prenom);
+  }
+  
+  /**
+   * Cherche un film à partir de son titre.
+   *
+   * @param titre le titre du film
+   * @return le film s'il a été trouvé ou <code>null</code> sinon
+   */
 
-	@Override
-	public Artiste getActeur(String nom, String prenom) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  @Override
+  public Film getFilm(String titre) {
+    if (titre == null || titre.trim().isEmpty()) {
+      return null; // Paramètre invalide
+    }
+    return gestionFilm.getFilm(titre);
+  }
 
-	@Override
-	public Artiste getRealisateur(String nom, String prenom) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  /**
+   * Renvoie l'ensemble des films d'un certain réalisateur.
+   *
+   * @param realisateur le réalisateur
+   * @return l'ensemble des films du réalisateur ou <code>null</code> si aucun
+   *         film n'a été trouvé ou que le paramètre était invalide
+   */
+  
+  @Override
+  public Set<Film> ensembleFilmsRealisateur(Artiste realisateur) {
+    if (realisateur == null) {
+      return null; // Paramètre invalide
+    }
+    return gestionFilm.ensembleFilmsRealisateur(realisateur);
+  }
 
-	@Override
-	public Film getFilm(String titre) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  /**
+   * Renvoie l'ensemble des films d'un certain réalisateur.
+   *
+   * @param nom le nom du réalisateur
+   * @param prenom le prénom du réalisateur
+   * @return l'ensemble des films du réalisateur ou <code>null</code> si aucun
+   *         film n'a été trouvé ou que les paramètres étaient invalides
+   */
 
-	@Override
-	public Set<Film> ensembleFilmsRealisateur(Artiste realisateur) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  @Override
+  public Set<Film> ensembleFilmsRealisateur(String nom, String prenom) {
+    Artiste realisateur = gestionFilm.getRealisateur(nom, prenom);
+    if (realisateur == null) {
+      return null;
+    }
+    return ensembleFilmsRealisateur(realisateur);
+  }
 
-	@Override
-	public Set<Film> ensembleFilmsRealisateur(String nom, String prenom) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  /**
+   * Renvoie l'ensemble des films d'un certain acteur.
+   *
+   * @param acteur l'acteur
+   * @return l'ensemble des films de l'acteur ou <code>null</code> si aucun film
+   *         n'a été trouvé ou que le paramètre était invalide
+   */
+  
+  @Override
+  public Set<Film> ensembleFilmsActeur(Artiste acteur) {
+    Set<Film> films = gestionFilm.ensembleFilmsActeur(acteur);
+    return (films == null || films.isEmpty()) ? null : new HashSet<>(films);
+  }
 
-	@Override
-	public Set<Film> ensembleFilmsActeur(Artiste acteur) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  /**
+   * Renvoie l'ensemble des films d'un certain acteur.
+   *
+   * @param nom le nom de l'acteur
+   * @param prenom le prénom de l'acteur
+   * @return l'ensemble des films de l'acteur ou <code>null</code> si aucun film
+   *         n'a été trouvé ou que les paramètres étaient invalides
+   */
+  
+  @Override
+  public Set<Film> ensembleFilmsActeur(String nom, String prenom) {
+    Artiste acteur = gestionFilm.getActeur(nom, prenom);
+    if (acteur == null) {
+      return null;
+    }
+    return ensembleFilmsActeur(acteur);
+  }
 
-	@Override
-	public Set<Film> ensembleFilmsActeur(String nom, String prenom) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  /**
+   * Renvoie l'ensemble des films d'un certain genre.
+   *
+   * @param genre le genre du film
+   * @return l'ensemble des films du genre ou <code>null</code> si aucun film
+   *         n'a été trouvé
+   */
+  
+  @Override
+  public Set<Film> ensembleFilmsGenre(Genre genre) {
+    Set<Film> films = gestionFilm.ensembleFilmsGenre(genre);
+    return (films == null || films.isEmpty()) ? null : new HashSet<>(films);
+  }
+  
+  /**
+   * Renvoie l'ensemble des films d'un certain genre.
+   *
+   * @param genre le genre du film (doit correspondre à un élément de
+   *        l'énumération {@link location.Genre Genre})
+   * @return l'ensemble des films du genre ou <code>null</code> si aucun film
+   *         n'a été trouvé ou que le genre était invalide
+   * @see location.Genre
+   */
+  
+  @Override
+  public Set<Film> ensembleFilmsGenre(String genre) {
+    try {
+      Genre genreEnum = Genre.valueOf(genre.toUpperCase());
+      return ensembleFilmsGenre(genreEnum);
+    } catch (IllegalArgumentException e) {
+      return null; // Genre invalide
+    }
+  }
+  
+  
+  /**
+   * Renvoie l'ensemble des évaluations d'un film.
+   *
+   * @param film le film dont on veut les évaluations
+   * @return toutes les évaluations d'un film ou <code>null</code> si aucune
+   *         évaluation n'existe pour que le film ou que le film était invalide
+   *         (valeur <code>null</code> par exemple)
+   */
+  
+  @Override
+  public Set<Evaluation> ensembleEvaluationsFilm(Film film) {
+    if (film == null || film.getEvaluations().isEmpty()) {
+      return null;
+    }
+    return new HashSet<>(film.getEvaluations());
+  }
 
-	@Override
-	public Set<Film> ensembleFilmsGenre(Genre genre) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  /**
+   * Renvoie l'ensemble des évaluations d'un film.
+   *
+   * @param titre le titre du film dont on veut les évaluations
+   * @return toutes les évaluations d'un film ou <code>null</code> si aucune
+   *         évaluation n'existe pour le film ou que le titre du film était
+   *         inconnu ou invalide (valeur <code>null</code> par exemple)
+   */
+  
+  @Override
+  public Set<Evaluation> ensembleEvaluationsFilm(String titre) {
+    Film film = gestionFilm.getFilm(titre);
+    return (film == null) ? null : ensembleEvaluationsFilm(film);
+  }
+  
+  /**
+   * Renvoie l'évaluation moyenne d'un film (la moyenne des notes de toutes les
+   * évaluations sur le film).
+   *
+   * @param film le film dont on récupère l'évaluation moyenne
+   * @return l'évaluation moyenne du film ou -1 si le film n'a aucune évaluation
+   *         ou -2 en cas de film invalide (n'existant pas ou valeur
+   *         <code>null</code>)
+   */
+  
+  @Override
+  public double evaluationMoyenne(Film film) {
+    if (film == null) {
+      return -2; // Film invalide
+    }
+    double moyenne = film.calculmoyenneEval();
+    return moyenne > 0 ? moyenne : -1; // -1 si aucune évaluation
+  }
 
-	@Override
-	public Set<Film> ensembleFilmsGenre(String genre) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	@Override
-	public Set<Evaluation> ensembleEvaluationsFilm(Film film) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  /**
+   * Renvoie l'évaluation moyenne d'un film (la moyenne des notes de toutes les
+   * évaluations sur le film).
+   *
+   * @param titre le titre du film dont on récupère l'évaluation moyenne
+   * @return l'évaluation moyenne du film ou -1 si le film n'a aucune évaluation
+   *         ou -2 en cas de titre de film invalide (il n'existe pas de film
+   *         avec ce titre ou valeur <code>null</code>)
+   */
 
-	@Override
-	public Set<Evaluation> ensembleEvaluationsFilm(String titre) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  @Override
+  public double evaluationMoyenne(String titre) {
+    Film film = gestionFilm.getFilm(titre);
+    return (film == null) ? -2 : evaluationMoyenne(film);
+  }
 
-	@Override
-	public double evaluationMoyenne(Film film) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
-	@Override
-	public double evaluationMoyenne(String titre) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+
 
 }

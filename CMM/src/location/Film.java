@@ -53,6 +53,12 @@ public class Film {
    * Les évaluations données au film.
    */
   private List<Evaluation> evaluations;
+  
+  /**
+   * L'affiche du film (chemin d'accès à une image).
+   */
+  private String affiche;
+
 
   /**
    * Crée un film avec toutes ses informations obligatoires.
@@ -65,26 +71,26 @@ public class Film {
    */
   public Film(String titre, Artiste realisateur, int annee, int ageLimite, Set<Genre> genres) {
     if (titre == null) {
-	        throw new NullPointerException("Le titre ne peut pas être null.");
-}
-	    if (realisateur == null) {
-	        throw new NullPointerException("Le réalisateur ne peut pas être null.");
-	    }
-	    if (annee <= 0) {
-	        throw new IllegalArgumentException("L'année doit être un entier positif.");
-	    }
-	    if (ageLimite < 0) {
-	        throw new IllegalArgumentException("L'âge limite ne peut pas être négatif.");
-	    }
-	    this.titre = titre;
-	    this.realisateur = realisateur;
-	    this.annee = annee;
-	    this.ageLimite = ageLimite;
-	    this.genres = new HashSet<>(genres);
-	    this.acteurs = new HashSet<>();
-	    this.estOuvertalocation = false;
-	    this.evaluations = new ArrayList<>();
-	}
+      throw new NullPointerException("Le titre ne peut pas être null.");
+    }
+    if (realisateur == null) {
+      throw new NullPointerException("Le réalisateur ne peut pas être null.");
+    }
+    if (annee <= 0) {
+      throw new IllegalArgumentException("L'année doit être un entier positif.");
+    }
+    if (ageLimite < 0) {
+      throw new IllegalArgumentException("L'âge limite ne peut pas être négatif.");
+    }
+    this.titre = titre;
+    this.realisateur = realisateur;
+    this.annee = annee;
+    this.ageLimite = ageLimite;
+    this.genres = new HashSet<>(genres);
+    this.acteurs = new HashSet<>();
+    this.estOuvertalocation = false;
+    this.evaluations = new ArrayList<>();
+  }
 
 
 
@@ -151,6 +157,25 @@ public class Film {
   public boolean isEstOuvertalocation() {
     return estOuvertalocation;
   }
+  /**
+   * modifie l'etat de  location.
+   *
+   * 
+   */
+  
+  public void modifierLocation(boolean etat) {
+    estOuvertalocation = !etat;
+  }
+  /**
+   * set l'etat de  location.
+   *
+   * 
+   */
+  
+  public void setLocation(boolean etat) {
+    estOuvertalocation = etat;
+  }
+  
 
   /**
    * Renvoie les évaluations du film.
@@ -177,18 +202,108 @@ public class Film {
     }
     return somme / this.evaluations.size();
   }
+  
+  /**
+   * Définit l'affiche du film.
+   *
+   * @param affiche le chemin ou l'URL de l'affiche du film
+   */
+  public void setAffiche(String affiche) {
+    if (affiche == null || affiche.trim().isEmpty()) {
+      throw new IllegalArgumentException("L'affiche ne peut pas être vide ou nulle.");
+    }
+    this.affiche = affiche;
+  }
 
+  /**
+   * Renvoie l'affiche du film.
+   *
+   * @return l'affiche du film
+   */
+  public String getAffiche() {
+    return affiche;
+  }  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  /**
+   * Supprime une évaluation associée à ce film.
+   *
+   * @param evaluation l'évaluation à supprimer
+   * @throws IllegalArgumentException si l'évaluation est nulle 
+   *         ou ne fait pas partie des évaluations du film
+   */
+  public void supprimerEvaluation(Evaluation evaluation) {
+    if (evaluation == null) {
+      throw new IllegalArgumentException("L'évaluation à supprimer ne peut pas être nulle.");
+    }
+    if (!evaluations.contains(evaluation)) {
+      throw new IllegalArgumentException("L'évaluation spécifiée ne fait pas partie"
+      + " des évaluations de ce film.");
+    }
+    evaluations.remove(evaluation);
+  }
+
+  
+  /**
+   * Ajoute une évaluation pour ce film.
+   *
+   * @param utilisateur l'utilisateur qui évalue le film
+   * @param evaluation l'évaluation à ajouter
+   * @throws IllegalArgumentException si l'utilisateur ou l'évaluation est null
+   */
+  public void ajouterEvaluation(Utilisateur utilisateur, Evaluation evaluation) {
+    if (utilisateur == null) {
+      throw new IllegalArgumentException("L'utilisateur ne peut pas être null.");
+    }
+    if (evaluation == null) {
+      throw new IllegalArgumentException("L'évaluation ne peut pas être null.");
+    }
+
+    // Ajouter l'évaluation à la liste des évaluations du film
+    evaluations.add(evaluation);
+  }
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
   @Override
   public String toString() {
-    return "Film{" +
-        "titre='" + titre + '\'' +
-        ", realisateur=" + realisateur +
-        ", annee=" + annee +
-        ", ageLimite=" + ageLimite +
-        ", genres=" + genres +
-        ", acteurs=" + acteurs +
-        ", estOuvertalocation=" + estOuvertalocation +
-        ", evaluations=" + evaluations +
+    return "Film{" 
+      +
+        "titre='" + titre + '\'' 
+      +
+        ", realisateur=" + realisateur
+      +
+        ", annee=" + annee 
+      +
+        ", ageLimite=" + ageLimite 
+      +
+        ", genres=" + genres 
+      +
+        ", acteurs=" + acteurs 
+      +
+        ", estOuvertalocation=" + estOuvertalocation 
+      +
+        ", evaluations=" + evaluations
+      +
+        
+      ", affiche='" + (affiche != null ? affiche : "Pas d'affiche") + '\'' 
+      
+      +
         '}';
   }
 }
