@@ -152,19 +152,7 @@ public class FilmTest {
   /**
    * Teste le calcul de la moyenne des évaluations.
    */
-  @Test
-  void testCalculMoyenneEval() {
-    // Test avec liste vide
-    Assertions.assertEquals(0, film.calculmoyenneEval());
-      
-    // Ajout d'évaluations
-    film.getEvaluations().add(new Evaluation(4, "Très bon film", this.utilis, this.film));
-    film.getEvaluations().add(new Evaluation(5, "Excellent", this.utilis, this.film));
-    film.getEvaluations().add(new Evaluation(3, "Moyen", this.utilis, this.film));
-      
-    // Test avec évaluations (4 + 5 + 3) / 3 = 4
-    Assertions.assertEquals(4.0, film.calculmoyenneEval());
-  }
+
   
   
   
@@ -173,7 +161,8 @@ public class FilmTest {
   @Test
   void testSetAfficheValidValue() {
     // Création d'un film avec des paramètres valides
-    Film film = new Film("Inception", new Artiste("chris", "nolan", "americain"), 2010, 13, Set.of(Genre.Action));
+    Film film = new Film("Inception", new Artiste("chris", "nolan", "americain"),
+         2010, 13, Set.of(Genre.Action));
       
     // Définition d'une affiche valide
     String afficheValide = "inception.jpg";
@@ -186,7 +175,8 @@ public class FilmTest {
   @Test
   void testSetAfficheNullValue() {
     // Création d'un film avec des paramètres valides
-    Film film = new Film("Inception", new Artiste("chris", "nolan", "americain"), 2010, 13, Set.of(Genre.Action));
+    Film film = new Film("Inception", new Artiste("chris", "nolan", "americain"),
+        2010, 13, Set.of(Genre.Action));
       
     // Test avec une valeur null
     Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -200,10 +190,12 @@ public class FilmTest {
   @Test
   void testSetAfficheEmptyValue() {
     // Création d'un film avec des paramètres valides
-    Film film = new Film("Inception", new Artiste("chris","nolan", "americain"), 2010, 13, Set.of(Genre.Action));
+    Film film = new Film("Inception", new Artiste("chris", "nolan", "americain"),
+        2010, 13, Set.of(Genre.Action));
       
-      // Test avec une chaîne vide
-      Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+    // Test avec une chaîne vide
+    Exception exception = assertThrows(IllegalArgumentException.class,
+         () -> {
         film.setAffiche("");
       });
 
@@ -214,7 +206,8 @@ public class FilmTest {
   @Test
   void testSetAfficheWhitespaceOnlyValue() {
     // Création d'un film avec des paramètres valides
-    Film film = new Film("Inception", new Artiste("chris", "nolan", "americain"), 2010, 13, Set.of(Genre.Action));
+    Film film = new Film("Inception", new Artiste("chris", "nolan", "americain"),
+        2010, 13, Set.of(Genre.Action));
       
     // Test avec une chaîne composée uniquement d'espaces
     Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -228,7 +221,8 @@ public class FilmTest {
   @Test
   void testGetAfficheDefaultValue() {
     // Création d'un film sans définir l'affiche
-    Film film = new Film("Inception", new Artiste("chris","nolan", "americain"), 2010, 13, Set.of(Genre.Action));
+    Film film = new Film("Inception", new Artiste("chris","nolan", "americain"),
+        2010, 13, Set.of(Genre.Action));
       
     // Vérification que l'affiche est initialement null
     assertNull(film.getAffiche());

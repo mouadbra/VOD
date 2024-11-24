@@ -1,15 +1,13 @@
 package tests;
 
+import java.util.HashSet;
+import java.util.Set;
 import location.Artiste;
 import location.Film;
 import location.Genre;
 import location.GestionFilm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashSet;
-import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -114,7 +112,11 @@ public class GestionFilmTest {
     assertFalse(ferme);
   }
   
-  
+  /**
+   * Teste la méthode {@link Film#setAffiche(String)} avec une affiche valide.
+   * Vérifie que l'affiche est correctement définie lorsqu'une chaîne valide
+   * est fournie.
+   */ 
   
   @Test
   public void testSetAfficheValide() {
@@ -129,9 +131,16 @@ public class GestionFilmTest {
     film.setAffiche(affiche);
 
     // Vérification
-    assertEquals(affiche, film.getAffiche(), "L'affiche du film devrait être correctement définie.");
+    assertEquals(affiche, film.getAffiche(), "L'affiche du film "
+        + "devrait être correctement définie.");
   }
-
+  
+  /**
+   * Teste la méthode {@link Film#setAffiche(String)} avec des affiches invalides.
+   * Vérifie que la méthode lève une {@link IllegalArgumentException} lorsque
+   * l'affiche est <code>null</code> ou une chaîne vide.
+   */
+  
   @Test
   public void testSetAfficheInvalide() {
     // Initialisation des données pour le test
@@ -141,14 +150,22 @@ public class GestionFilmTest {
     Film film = new Film("Inception", realisateur, 2010, 13, genres);
 
     // Action et vérification : ajout d'une affiche invalide (null)
-    Exception exception1 = assertThrows(IllegalArgumentException.class, () -> film.setAffiche(null));
+    Exception exception1 = assertThrows(IllegalArgumentException.class, () 
+        -> film.setAffiche(null));
     assertEquals("L'affiche ne peut pas être vide ou nulle.", exception1.getMessage());
 
     // Action et vérification : ajout d'une affiche invalide (chaîne vide)
     Exception exception2 = assertThrows(IllegalArgumentException.class, () -> film.setAffiche(""));
     assertEquals("L'affiche ne peut pas être vide ou nulle.", exception2.getMessage());
   }
-
+  
+  /**
+   * Teste la méthode {@link Film#toString()} pour vérifier que l'affiche
+   * définie est incluse dans la représentation textuelle.
+   * Vérifie que l'affiche est bien incluse dans le résultat retourné par
+   * la méthode {@link Film#toString()}.
+   */
+  
   @Test
   public void testAfficheIncluseDansToString() {
     // Initialisation des données pour le test
@@ -163,6 +180,16 @@ public class GestionFilmTest {
 
     // Vérification : l'affiche doit apparaître dans toString
     String result = film.toString();
-    assertTrue(result.contains("affiche='inception.jpg'"), "L'affiche devrait apparaître dans la représentation textuelle.");
+    assertTrue(result.contains("affiche='inception.jpg'"), "L'affiche devrait"
+        + " apparaître dans la représentation textuelle.");
   }
+  
+  
+
+
+
+ 
+
+  
+  
 }

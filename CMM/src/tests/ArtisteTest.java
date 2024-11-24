@@ -2,18 +2,16 @@ package tests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
+import java.util.HashSet;
+import java.util.Set;
 import location.Artiste;
 import location.Film;
 import location.Genre;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
-import java.util.Set;
+
+
 /**
  * Classe de test pour la classe {@link location.Artiste Artiste}.
  *
