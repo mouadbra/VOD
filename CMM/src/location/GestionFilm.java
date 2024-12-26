@@ -99,7 +99,7 @@ public class GestionFilm implements InterAdministration {
     }
 
     // Création et ajout du film
-    Film nouveauFilm = new Film(titre, realisateur, annee, ageLimite, new HashSet<>());
+    Film nouveauFilm = new Film(titre, realisateur, annee, ageLimite);
     films.add(nouveauFilm);
     return nouveauFilm;
   }
@@ -203,7 +203,7 @@ public class GestionFilm implements InterAdministration {
   
   @Override
 public Set<Film> ensembleFilms() {
-    return new HashSet<>(films);
+    return films;
   }
 
   /**

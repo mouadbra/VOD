@@ -92,6 +92,29 @@ public class Film {
     this.evaluations = new ArrayList<>();
   }
 
+  public Film(String titre, Artiste realisateur, int annee, int ageLimite) {
+	    if (titre == null) {
+	      throw new NullPointerException("Le titre ne peut pas être null.");
+	    }
+	    if (realisateur == null) {
+	      throw new NullPointerException("Le réalisateur ne peut pas être null.");
+	    }
+	    if (annee <= 0) {
+	      throw new IllegalArgumentException("L'année doit être un entier positif.");
+	    }
+	    if (ageLimite < 0) {
+	      throw new IllegalArgumentException("L'âge limite ne peut pas être négatif.");
+	    }
+	    this.titre = titre;
+	    this.realisateur = realisateur;
+	    this.annee = annee;
+	    this.ageLimite = ageLimite;
+	    this.genres = new HashSet<>();
+	    this.acteurs = new HashSet<>();
+	    this.estOuvertalocation = false;
+	    this.evaluations = new ArrayList<>();
+	  }
+
 
 
 
