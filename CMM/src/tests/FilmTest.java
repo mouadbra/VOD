@@ -228,7 +228,19 @@ public class FilmTest {
     assertNull(film.getAffiche());
   }
   
-  
+  @Test
+  void testCalculMoyenneEval() {
+    // Test avec liste vide
+    Assertions.assertEquals(0, film.calculmoyenneEval());
+      
+    // Ajout d'évaluations
+    film.getEvaluations().add(new Evaluation(4, "Très bon film", this.utilis, this.film));
+    film.getEvaluations().add(new Evaluation(5, "Excellent", this.utilis, this.film));
+    film.getEvaluations().add(new Evaluation(3, "Moyen", this.utilis, this.film));
+      
+    // Test avec évaluations (4 + 5 + 3) / 3 = 4
+    Assertions.assertEquals(4.0, film.calculmoyenneEval());
+  }
   
   
 }
