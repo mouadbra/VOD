@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.UtilisateurControleur">
+   <children>
+      <SplitPane dividerPositions="0.29797979797979796, 0.5, 0.5" prefHeight="594.0" prefWidth="1139.0">
+        <items>
+          <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="573.0" prefWidth="300.0">
+               <children>
+                  <Label layoutX="108.0" layoutY="10.0" text="Utilisateur" textFill="#9f9f9f">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="10.0" layoutY="50.0" text="Nom" />
+                  <Label layoutX="10.0" layoutY="74.0" text="Prenom" />
+                  <TextField fx:id="entreeNomUtilisateur" layoutX="60.0" layoutY="46.0" prefHeight="25.0" prefWidth="224.0" />
+                  <TextField fx:id="entreePrenomUtilisateur" layoutX="60.0" layoutY="70.0" prefHeight="25.0" prefWidth="224.0" />
+                  <TextField fx:id="entreeAdresseUtilisateur" layoutX="60.0" layoutY="94.0" prefHeight="25.0" prefWidth="224.0" />
+                  <TextField fx:id="entreeAgeUtilisateur" layoutX="60.0" layoutY="118.0" prefHeight="25.0" prefWidth="224.0" />
+                  <Label layoutX="9.0" layoutY="98.0" text="Adresse" />
+                  <Label layoutX="10.0" layoutY="123.0" text="Age" />
+                  <Label layoutX="13.0" layoutY="161.0" text="Pseudo" />
+                  <Label layoutX="13.0" layoutY="185.0" text="Mot de passe" />
+                  <TextField fx:id="entreePseudoUtilisateur" layoutX="92.0" layoutY="157.0" prefHeight="25.0" prefWidth="190.0" />
+                  <TextField fx:id="entreeMotDePasseUtilisateur" layoutX="92.0" layoutY="181.0" prefHeight="25.0" prefWidth="190.0" />
+                  <Button layoutX="165.0" layoutY="218.0" mnemonicParsing="false" onAction="#actionBoutonInscription" text="Inscription" />
+                  <Button layoutX="46.0" layoutY="218.0" mnemonicParsing="false" onAction="#actionBoutonConnexion" prefHeight="25.0" prefWidth="84.0" text="Connexion" />
+                  <Button layoutX="45.0" layoutY="247.0" mnemonicParsing="false" onAction="#actionBoutonDeconnexion" text="Déconnexion" />
+                  <ListView fx:id="listeFilmsEnLocation" layoutX="15.0" layoutY="340.0" prefHeight="87.0" prefWidth="271.0" />
+                  <Label layoutX="16.0" layoutY="318.0" text="Films en location par l'utilisateur connecté :" />
+                  <Button layoutX="153.0" layoutY="434.0" mnemonicParsing="false" onAction="#actionBoutonFinLocation" prefHeight="50.0" prefWidth="132.0" text="Terminer la location du film sélectionné" wrapText="true" />
+                  <Button layoutX="17.0" layoutY="434.0" mnemonicParsing="false" onAction="#actionBoutonAfficherFilmLoue" prefHeight="50.0" prefWidth="132.0" text="Afficher les détails du film sélectionné" wrapText="true" />
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="696.0" prefWidth="300.0">
+               <children>
+                  <Label layoutX="118.0" layoutY="10.0" text="Artiste" textFill="#9f9f9f">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="17.0" layoutY="37.0" text="La liste affiche :" />
+                  <ListView fx:id="listeArtistes" layoutX="15.0" layoutY="79.0" onMouseClicked="#actionSelectionArtiste" prefHeight="139.0" prefWidth="271.0" />
+                  <Label fx:id="labelListeArtistes" layoutX="17.0" layoutY="55.0" text="..." />
+                  <Label layoutX="17.0" layoutY="229.0" text="Prénom" />
+                  <TextField fx:id="entreePrenomArtiste" layoutX="85.0" layoutY="224.0" prefHeight="26.0" prefWidth="198.0" />
+                  <TextField fx:id="entreeNomArtiste" layoutX="85.0" layoutY="250.0" prefHeight="26.0" prefWidth="198.0" />
+                  <TextField fx:id="entreeNationaliteArtiste" editable="false" layoutX="85.0" layoutY="276.0" prefHeight="26.0" prefWidth="198.0" />
+                  <Label layoutX="18.0" layoutY="253.0" text="Nom " />
+                  <Label layoutX="19.0" layoutY="280.0" text="Nationalité" />
+                  <Button layoutX="85.0" layoutY="457.0" mnemonicParsing="false" onAction="#actionBoutonAfficherFilmsActeurSelectionne" text="Acteur" />
+                  <Button layoutX="9.0" layoutY="457.0" mnemonicParsing="false" onAction="#actionBoutonAfficherFilmsRealisateurSelectionne" text="Réalisateur" />
+                  <Label layoutX="9.0" layoutY="325.0" text="Afficher dans la liste :" />
+                  <Button layoutX="8.0" layoutY="342.0" mnemonicParsing="false" onAction="#actionBoutonAfficherTousArtistes" text="Tous les artistes" />
+                  <Button layoutX="189.0" layoutY="342.0" mnemonicParsing="false" onAction="#actionBoutonAfficherArtistesRealisateurs" text="Les réalisateurs" />
+                  <Button layoutX="111.0" layoutY="342.0" mnemonicParsing="false" onAction="#actionBoutonAfficherArtistesActeurs" text="Les acteurs" />
+                  <Label layoutX="10.0" layoutY="440.0" text="Afficher les films de l'artiste sélectionné en tant que :" />
+                  <Button layoutX="9.0" layoutY="396.0" mnemonicParsing="false" onAction="#actionBoutonChercherActeur" text="Un acteur" />
+                  <Label layoutX="10.0" layoutY="379.0" text="Chercher :" />
+                  <Button layoutX="79.0" layoutY="396.0" mnemonicParsing="false" onAction="#actionBoutonChercherRealisateur" text="Un réalisateur" />
+               </children>
+            </AnchorPane>
+            <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="573.0" prefWidth="300.0">
+               <children>
+                  <Label layoutX="131.0" layoutY="11.0" text="Film" textFill="#9f9f9f">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="14.0" layoutY="38.0" text="La liste affiche :" />
+                  <ListView fx:id="listeFilms" layoutX="15.0" layoutY="80.0" onMouseClicked="#actionSelectionFilm" prefHeight="139.0" prefWidth="271.0" />
+                  <Label fx:id="labelListeFilms" layoutX="15.0" layoutY="55.0" text="..." />
+                  <CheckBox fx:id="checkFilmLouable" layoutX="16.0" layoutY="362.0" mnemonicParsing="false" text="louable" />
+                  <Button layoutX="13.0" layoutY="392.0" mnemonicParsing="false" onAction="#actionBoutonAfficherActeursFilmSelectionne" prefHeight="50.0" prefWidth="113.0" text="Afficher les acteurs du film" wrapText="true" />
+                  <Label layoutX="16.0" layoutY="229.0" text="Titre" />
+                  <TextField fx:id="entreeTitreFilm" layoutX="78.0" layoutY="225.0" prefHeight="26.0" prefWidth="214.0" />
+                  <Label layoutX="17.0" layoutY="257.0" text="Année" />
+                  <Label layoutX="16.0" layoutY="281.0" text="Age limite" />
+                  <TextField fx:id="entreeAnneeFilm" editable="false" layoutX="78.0" layoutY="251.0" prefHeight="26.0" prefWidth="74.0" />
+                  <Label layoutX="17.0" layoutY="307.0" text="Réalisateur" />
+                  <TextField fx:id="entreeNomPrenomRealisateurFilm" editable="false" layoutX="78.0" layoutY="303.0" prefHeight="26.0" prefWidth="214.0" />
+                  <TextField fx:id="entreeAgeLimiteFilm" editable="false" layoutX="78.0" layoutY="277.0" prefHeight="26.0" prefWidth="74.0" />
+                  <Label layoutX="18.0" layoutY="332.0" text="Genres" />
+                  <TextField fx:id="entreeGenresFilm" editable="false" layoutX="78.0" layoutY="329.0" prefHeight="26.0" prefWidth="214.0" />
+                  <Button layoutX="13.0" layoutY="444.0" mnemonicParsing="false" onAction="#actionBoutonAfficherFilmRealisateurSelectionne" prefHeight="50.0" prefWidth="113.0" text="Afficher les films du réalisateur" wrapText="true" />
+                  <Button layoutX="126.0" layoutY="361.0" mnemonicParsing="false" onAction="#actionBoutonLouerFilmSelectionne" prefHeight="25.0" prefWidth="165.0" text="Louer le film sélectionné" wrapText="true" />
+                  <Label layoutX="14.0" layoutY="552.0" text="Tous les genres :" />
+                  <ListView fx:id="listeGenresFilm" layoutX="11.0" layoutY="571.0" prefHeight="64.0" prefWidth="134.0" />
+                  <Button layoutX="150.0" layoutY="571.0" mnemonicParsing="false" onAction="#actionBoutonAfficherFilmsGenre" prefHeight="64.0" prefWidth="113.0" text="Afficher les films du genre sélectionné" wrapText="true" />
+                  <StackPane fx:id="paneAffiche" layoutX="157.0" layoutY="393.0" prefHeight="160.0" prefWidth="120.0">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </StackPane>
+                  <Button layoutX="13.0" layoutY="496.0" mnemonicParsing="false" onAction="#actionBoutonAfficherTousFilms" prefHeight="50.0" prefWidth="113.0" text="Afficher tous les films" wrapText="true" />
+                  <Button layoutX="179.0" layoutY="251.0" mnemonicParsing="false" onAction="#actionBoutonChercherFilm" prefHeight="27.0" prefWidth="113.0" text="Chercher un film" wrapText="true" />
+               </children>
+               <opaqueInsets>
+                  <Insets top="2.0" />
+               </opaqueInsets>
+            </AnchorPane>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <Label layoutX="86.0" layoutY="9.0" text="Evaluation" textFill="#9f9f9f">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <ListView fx:id="listeEvaluations" layoutX="7.0" layoutY="89.0" onMouseClicked="#actionSelectionEvaluation" prefHeight="139.0" prefWidth="260.0" />
+                  <Label layoutX="5.0" layoutY="59.0" text="Evaluation moyenne" />
+                  <TextField fx:id="entreeEvaluationMoyenne" editable="false" layoutX="120.0" layoutY="55.0" prefHeight="26.0" prefWidth="74.0" />
+                  <Label layoutX="7.0" layoutY="245.0" text="Auteur" />
+                  <TextField fx:id="entreeAuteurEvaluation" editable="false" layoutX="50.0" layoutY="242.0" prefHeight="26.0" prefWidth="214.0" />
+                  <Label layoutX="8.0" layoutY="273.0" text="Note" />
+                  <ChoiceBox fx:id="listeNoteEvaluation" layoutX="51.0" layoutY="269.0" prefHeight="25.0" prefWidth="42.0" />
+                  <TextArea fx:id="texteCommentaire" layoutX="8.0" layoutY="318.0" prefHeight="95.0" prefWidth="260.0" />
+                  <Label layoutX="7.0" layoutY="301.0" text="Commentaire : " />
+                  <Button layoutX="8.0" layoutY="424.0" mnemonicParsing="false" onAction="#actionBoutonAfficherMonEvaluation" prefHeight="50.0" prefWidth="86.0" text="Afficher mon évaluation" wrapText="true" />
+                  <Button layoutX="98.0" layoutY="424.0" mnemonicParsing="false" onAction="#actionBoutonCreerMonEvaluation" prefHeight="50.0" prefWidth="72.0" text="Créer mon évaluation" wrapText="true" />
+                  <Button layoutX="174.0" layoutY="424.0" mnemonicParsing="false" onAction="#actionBoutonModifierMonEvaluation" prefHeight="50.0" prefWidth="90.0" text="Modifier mon évaluation" wrapText="true" />
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</VBox>
