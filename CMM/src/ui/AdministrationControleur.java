@@ -24,7 +24,7 @@ import location.GestionFilm;
  *
  */
 public class AdministrationControleur {
-    public GestionFilm gestionFilm;
+    static GestionFilm gestionFilm;
     private Film filmSelectionne;
     private Artiste artisteSelectionne;
     
