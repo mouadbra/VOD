@@ -237,6 +237,15 @@ public Set<Artiste> ensembleActeurs() {
     return realisateurs;
   }
   
+  
+  
+  
+  
+  public Set<Artiste> ensembleArtistes() {
+  //Set<Artiste> realisateurs = new HashSet<>();
+	  
+  return artistes;
+}
   /**
    * Renvoie l'ensemble des films réalisés par un réalisateur donné.
    *
