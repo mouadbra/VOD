@@ -221,9 +221,12 @@ public class Gestionnaire implements InterUtilisateur {
       + "dans votre historique de location");
 
     }
-    if (utilisateurConnecte.getEvaluations().contains(eval)) {
-      throw new LocationException("vous avez deja evalue ce film");
+    for (Evaluation e : utilisateurConnecte.getEvaluations()) {
+      if (e.getFilm().equals(film)) {
+        throw new LocationException("vous avez déjà évalué ce film");
+      }
     }
+
         
     utilisateurConnecte.ajouterEvaluation(eval);
     film.ajouterEvaluation(utilisateurConnecte, eval);
@@ -389,6 +392,7 @@ public class Gestionnaire implements InterUtilisateur {
     Set<Film> films = gestionFilm.ensembleFilmsActeur(acteur);
     return (films == null || films.isEmpty()) ? null : new HashSet<>(films);
   }
+  
 
   /**
    * Renvoie l'ensemble des films d'un certain acteur.
