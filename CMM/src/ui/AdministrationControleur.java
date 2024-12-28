@@ -1,5 +1,9 @@
 package ui;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Set;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,353 +14,337 @@ import location.Artiste;
 import location.Film;
 import location.Genre;
 import location.GestionFilm;
-import java.util.Arrays;
 
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Set;
+/**
+ * Controleur JavaFX de la fenêtre d'administration.
+ *
+ * @author Eric Cariou
+ *
+ */
 
 public class AdministrationControleur {
 
-    @FXML
+  @FXML
     private CheckBox checkBoxLocationFilm;
 
-    @FXML
+  @FXML
     private TextField entreeAffiche;
 
-    @FXML
+  @FXML
     private TextField entreeAnneeFilm;
 
-    @FXML
+  @FXML
     private TextField entreeNationaliteArtiste;
 
-    @FXML
+  @FXML
     private TextField entreeNomArtiste;
 
-    @FXML
+  @FXML
     private TextField entreeNomPrenomRealisateur;
 
-    @FXML
+  @FXML
     private TextField entreePrenomArtiste;
 
-    @FXML
+  @FXML
     private TextField entreeTitreFilm;
 
-    @FXML
+  @FXML
     private Label labelListeArtistes;
 
-    @FXML
+  @FXML
     private Label labelListeFilms;
 
-    @FXML
+  @FXML
     private ListView<String> listeArtistes;
 
-    @FXML
+  @FXML
     private ChoiceBox<String> listeChoixAgeLimite;
 
-    @FXML
+  @FXML
     private ListView<String> listeFilms;
 
-    @FXML
+  @FXML
     private ListView<String> listeGenresFilm;
 
-    @FXML
+  @FXML
     private ListView<String> listeTousGenres;
 
-    static GestionFilm gestionFilm;
+  static GestionFilm gestionFilm;
 
-    @FXML
+  @FXML
     void initialize() {
-    	gestionFilm = new GestionFilm();
-        // Initialisation des limites d'âge pour la liste déroulante
-        listeChoixAgeLimite.getItems().addAll("0", "10", "12", "16", "18");
+    gestionFilm = new GestionFilm();
+    // Initialisation des limites d'âge pour la liste déroulante
+    listeChoixAgeLimite.getItems().addAll("0", "10", "12", "16", "18");
 
-        // Initialisation des genres disponibles
-        listeTousGenres.getItems().addAll("Action", "Comedie", "Drame", "Horreur");
+    // Initialisation des genres disponibles
+    listeTousGenres.getItems().addAll("Action", "Comedie", "Drame", "Horreur");
 
-        // Chargement initial des artistes et des films dans leurs listes respectives
-        mettreAJourListeArtistes();
-        mettreAJourListeFilms();
+    // Chargement initial des artistes et des films dans leurs listes respectives
+    mettreAjourListeartistes();
+    mettreaJourlistefilms();
+  }
+
+  private void mettreAjourListeartistes() {
+    listeArtistes.getItems().clear();
+    if (gestionFilm != null) {
+      for (Artiste artiste : gestionFilm.ensembleActeurs()) {
+        listeArtistes.getItems().add(artiste.getNom() + " " + artiste.getPrenom());
+      }
+    }
+    labelListeArtistes.setText("Liste des artistes");
+  }
+
+  private void mettreaJourlistefilms() {
+    listeFilms.getItems().clear();
+    if (gestionFilm != null) {
+      for (Film film : gestionFilm.ensembleFilms()) {
+        listeFilms.getItems().add(film.getTitre());
+      }
+    }
+    labelListeFilms.setText("Liste des films");
+  }
+
+
+  @FXML
+  void actionBoutonEnregistrerArtiste(ActionEvent event) {
+    String nom = entreeNomArtiste.getText();
+    String prenom = entreePrenomArtiste.getText();
+    String nationalite = entreeNationaliteArtiste.getText();
+
+    if (nom.isEmpty() || prenom.isEmpty() || nationalite.isEmpty()) {
+      afficherAlerte("Erreur", "Tous les champs de l'artiste doivent être remplis.");
+      return;
     }
 
-    private void mettreAJourListeArtistes() {
-        listeArtistes.getItems().clear();
-        if (gestionFilm != null) {
-            for (Artiste artiste : gestionFilm.ensembleActeurs()) {
-                listeArtistes.getItems().add(artiste.getNom() + " " + artiste.getPrenom());
-            }
-        }
-        labelListeArtistes.setText("Liste des artistes");
+    Artiste nouvelArtiste = gestionFilm.creerArtiste(nom, prenom, nationalite);
+    if (nouvelArtiste != null) {
+      listeArtistes.getItems().add(nom + " " + prenom);
+    } else {
+      afficherAlerte("Erreur", "L'artiste existe déjà.");
+    }
+  }
+
+  @FXML
+  void actionBoutonSupprimerArtiste(ActionEvent event) {
+    String artisteSelectionne = listeArtistes.getSelectionModel().getSelectedItem();
+    if (artisteSelectionne == null) {
+      afficherAlerte("Erreur", "Veuillez sélectionner un artiste à supprimer.");
+      return;
     }
 
-    private void mettreAJourListeFilms() {
-        listeFilms.getItems().clear();
-        if (gestionFilm != null) {
-            for (Film film : gestionFilm.ensembleFilms()) {
-                listeFilms.getItems().add(film.getTitre());
-            }
-        }
-        labelListeFilms.setText("Liste des films");
+    String[] details = artisteSelectionne.split(" ");
+    Artiste artiste = gestionFilm.getArtiste(details[0], details[1]);
+    if (gestionFilm.supprimerArtiste(artiste)) {
+      listeArtistes.getItems().remove(artisteSelectionne);
+    } else {
+      afficherAlerte("Erreur", "Impossible de supprimer l'artiste (lié à un film).");
+    }
+  }
+
+  @FXML
+  void actionBoutonEnregistrerFilm(ActionEvent event) {
+    String artisteSelectionne = listeArtistes.getSelectionModel().getSelectedItem();
+
+    if (artisteSelectionne == null || artisteSelectionne.isEmpty()) {
+      afficherMessageErreur("Veuillez sélectionner un réalisateur dans la liste.");
+      return;
     }
 
-
-    @FXML
-    void actionBoutonEnregistrerArtiste(ActionEvent event) {
-        String nom = entreeNomArtiste.getText();
-        String prenom = entreePrenomArtiste.getText();
-        String nationalite = entreeNationaliteArtiste.getText();
-
-        if (nom.isEmpty() || prenom.isEmpty() || nationalite.isEmpty()) {
-            afficherAlerte("Erreur", "Tous les champs de l'artiste doivent être remplis.");
-            return;
-        }
-
-        Artiste nouvelArtiste = gestionFilm.creerArtiste(nom, prenom, nationalite);
-        if (nouvelArtiste != null) {
-            listeArtistes.getItems().add(nom + " " + prenom);
-        } else {
-            afficherAlerte("Erreur", "L'artiste existe déjà.");
-        }
+    // Sépare le nom et le prénom
+    String[] nomPrenom = artisteSelectionne.split(" ");
+    if (nomPrenom.length < 2) {
+      afficherMessageErreur("Format invalide pour le réalisateur sélectionné."
+          + " Assurez-vous qu'il contient à la fois un nom et un prénom.");
+      
+      return;
     }
 
-    @FXML
-    void actionBoutonSupprimerArtiste(ActionEvent event) {
-        String artisteSelectionne = listeArtistes.getSelectionModel().getSelectedItem();
-        if (artisteSelectionne == null) {
-            afficherAlerte("Erreur", "Veuillez sélectionner un artiste à supprimer.");
-            return;
-        }
+    String nom = nomPrenom[0];
+    String prenom = nomPrenom[1];
 
-        String[] details = artisteSelectionne.split(" ");
-        Artiste artiste = gestionFilm.getArtiste(details[0], details[1]);
-        if (gestionFilm.supprimerArtiste(artiste)) {
-            listeArtistes.getItems().remove(artisteSelectionne);
-        } else {
-            afficherAlerte("Erreur", "Impossible de supprimer l'artiste (lié à un film).");
-        }
+    // Récupération des informations saisies
+    String titre = entreeTitreFilm.getText();
+    String anneeString = entreeAnneeFilm.getText();
+    String ageLimiteString = listeChoixAgeLimite.getValue();
+
+    if (titre.isEmpty() || anneeString.isEmpty() || ageLimiteString == null) {
+      afficherMessageErreur("Veuillez remplir tous les champs requis pour le film.");
+      return;
     }
 
-    @FXML
-    void actionBoutonEnregistrerFilm(ActionEvent event) {
-        String artisteSelectionne = listeArtistes.getSelectionModel().getSelectedItem();
-
-        if (artisteSelectionne == null || artisteSelectionne.isEmpty()) {
-            afficherMessageErreur("Veuillez sélectionner un réalisateur dans la liste.");
-            return;
-        }
-
-        // Sépare le nom et le prénom
-        String[] nomPrenom = artisteSelectionne.split(" ");
-        if (nomPrenom.length < 2) {
-            afficherMessageErreur("Format invalide pour le réalisateur sélectionné. Assurez-vous qu'il contient à la fois un nom et un prénom.");
-            return;
-        }
-
-        String nom = nomPrenom[0];
-        String prenom = nomPrenom[1];
-
-        // Récupération des informations saisies
-        String titre = entreeTitreFilm.getText();
-        String anneeString = entreeAnneeFilm.getText();
-        String ageLimiteString = listeChoixAgeLimite.getValue();
-
-        if (titre.isEmpty() || anneeString.isEmpty() || ageLimiteString == null) {
-            afficherMessageErreur("Veuillez remplir tous les champs requis pour le film.");
-            return;
-        }
-
-        int annee;
-        int ageLimite;
-        try {
-            annee = Integer.parseInt(anneeString);
-            ageLimite = Integer.parseInt(ageLimiteString);
-        } catch (NumberFormatException e) {
-            afficherMessageErreur("L'année et l'âge limite doivent être des nombres valides.");
-            return;
-        }
-
-        Artiste realisateur = gestionFilm.getArtiste(nom, prenom);
-        if (realisateur == null) {
-            afficherMessageErreur("Le réalisateur sélectionné n'existe pas.");
-            return;
-        }
-
-        // Création du film
-        Film film = gestionFilm.creerFilm(titre, realisateur, annee, ageLimite);
-        if (film == null) {
-            afficherMessageErreur("Impossible de créer le film. Un film avec ce titre existe peut-être déjà.");
-        } else {
-            mettreAJourListeFilms();
-            afficherMessageSucces("Film créé avec succès.");
-        }
+    int annee;
+    int ageLimite;
+    try {
+      annee = Integer.parseInt(anneeString);
+      ageLimite = Integer.parseInt(ageLimiteString);
+    } catch (NumberFormatException e) {
+      afficherMessageErreur("L'année et l'âge limite doivent être des nombres valides.");
+      return;
     }
 
-
-    @FXML
-    void actionBoutonSupprimerFilm(ActionEvent event) {
-        String filmSelectionne = listeFilms.getSelectionModel().getSelectedItem();
-        if (filmSelectionne == null) {
-            return;
-        }
-
-        Film film = gestionFilm.getFilm(filmSelectionne);
-        if (gestionFilm.supprimerFilm(film)) {
-            listeFilms.getItems().remove(filmSelectionne);
-        } else {
-            afficherAlerte("Erreur", "Impossible de supprimer ce film.");
-        }
+    Artiste realisateur = gestionFilm.getArtiste(nom, prenom);
+    if (realisateur == null) {
+      afficherMessageErreur("Le réalisateur sélectionné n'existe pas.");
+      return;
     }
 
-    @FXML
-    void actionBoutonParcourirAffiche(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choisir une affiche");
-        File file = fileChooser.showOpenDialog(null);
+    // Création du film
+    Film film = gestionFilm.creerFilm(titre, realisateur, annee, ageLimite);
+    if (film == null) {
+      afficherMessageErreur("Impossible de créer le film."
+          + " Un film avec ce titre existe peut-être déjà.");
+    } else {
+      if (checkBoxLocationFilm.isSelected()) {
+        gestionFilm.ouvrirLocation(film);
+      } else {
+        gestionFilm.fermerLocation(film);
+      }
+      mettreaJourlistefilms();
+      afficherMessageSucces("Film créé avec succès.");
+    }
+  }
 
-        if (file != null) {
-            entreeAffiche.setText(file.getAbsolutePath());
-        }
+
+  @FXML
+  void actionBoutonSupprimerFilm(ActionEvent event) {
+    String filmSelectionne = listeFilms.getSelectionModel().getSelectedItem();
+    if (filmSelectionne == null) {
+      return;
     }
 
-    private void afficherAlerte(String titre, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(titre);
-        alert.setContentText(message);
-        alert.showAndWait();
+    Film film = gestionFilm.getFilm(filmSelectionne);
+    if (gestionFilm.supprimerFilm(film)) {
+      listeFilms.getItems().remove(filmSelectionne);
+    } else {
+      afficherAlerte("Erreur", "Impossible de supprimer ce film.");
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    @FXML
-    void actionBoutonChercherFilm(ActionEvent event) {
-        String titreFilm = entreeTitreFilm.getText();
+  }
 
-        if (titreFilm == null || titreFilm.isEmpty()) {
-            afficherMessageErreur("Veuillez entrer un titre de film à rechercher.");
-            return;
-        }
+  @FXML
+  void actionBoutonParcourirAffiche(ActionEvent event) {
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Choisir une affiche");
+    File file = fileChooser.showOpenDialog(null);
 
-        Film film = gestionFilm.getFilm(titreFilm);
-        if (film == null) {
-            afficherMessageErreur("Aucun film trouvé avec le titre : " + titreFilm);
-            return;
-        }
+    if (file != null) {
+      entreeAffiche.setText(file.getAbsolutePath());
+    }
+  }
 
-        // Mettre à jour les champs d'information sur le film
-        entreeTitreFilm.setText(film.getTitre());
-        entreeAnneeFilm.setText(String.valueOf(film.getAnnee()));
-        listeChoixAgeLimite.setValue(String.valueOf(film.getAgeLimite()));
-        entreeNomPrenomRealisateur.setText(film.getRealisateur().getNom() + " " + film.getRealisateur().getPrenom());
-        listeGenresFilm.getItems().clear();
+  private void afficherAlerte(String titre, String message) {
+    Alert alert = new Alert(Alert.AlertType.ERROR);
+    alert.setTitle(titre);
+    alert.setContentText(message);
+    alert.showAndWait();
+  }
+    
 
-        for (Genre genre : film.getGenres()) {
-            listeGenresFilm.getItems().add(genre.name());
-        }
+    
+  @FXML
+  void actionBoutonChercherFilm(ActionEvent event) {
+    String titreFilm = entreeTitreFilm.getText();
 
-        checkBoxLocationFilm.setSelected(film.isEstOuvertalocation());
-        afficherMessageSucces("Film trouvé et affiché.");
+    if (titreFilm == null || titreFilm.isEmpty()) {
+      afficherMessageErreur("Veuillez entrer un titre de film à rechercher.");
+      return;
     }
 
-    
-    @FXML
-    void actionBoutonChoisirArtisteSelectionneRealisateur(ActionEvent event) {
-        String selectionArtiste = listeArtistes.getSelectionModel().getSelectedItem();
-
-        if (selectionArtiste == null || selectionArtiste.isEmpty()) {
-            afficherMessageErreur("Veuillez sélectionner un artiste dans la liste.");
-            return;
-        }
-
-        // Extraire le nom et le prénom de l'artiste sélectionné
-        String[] nomPrenom = selectionArtiste.split(" ");
-        if (nomPrenom.length < 2) {
-            afficherMessageErreur("Format invalide pour l'artiste sélectionné.");
-            return;
-        }
-
-        String nom = nomPrenom[0];
-        String prenom = nomPrenom[1];
-
-        Artiste realisateur = gestionFilm.getArtiste(nom, prenom);
-        if (realisateur == null) {
-            afficherMessageErreur("L'artiste sélectionné n'est pas un réalisateur.");
-            return;
-        }
-
-        // Mettre à jour le champ réalisateur
-        entreeNomPrenomRealisateur.setText(realisateur.getNom() + " " + realisateur.getPrenom());
-        afficherMessageSucces("Le réalisateur a été choisi avec succès.");
+    Film film = gestionFilm.getFilm(titreFilm);
+    if (film == null) {
+      afficherMessageErreur("Aucun film trouvé avec le titre : " + titreFilm);
+      return;
     }
 
-    
+    // Mettre à jour les champs d'information sur le film
+    entreeTitreFilm.setText(film.getTitre());
+    entreeAnneeFilm.setText(String.valueOf(film.getAnnee()));
+    listeChoixAgeLimite.setValue(String.valueOf(film.getAgeLimite()));
+    entreeNomPrenomRealisateur.setText(film.getRealisateur().getNom() + " " 
+          + film.getRealisateur().getPrenom());
+    listeGenresFilm.getItems().clear();
 
-    
-    @FXML
-    void actionBoutonNouveauArtiste(ActionEvent event) {
-        // Effacer le contenu des champs liés à l'artiste
-        entreeNomArtiste.clear();
-        entreePrenomArtiste.clear();
-        entreeNationaliteArtiste.clear();
-        listeArtistes.getSelectionModel().clearSelection();
-
-        afficherMessageSucces("Les champs ont été réinitialisés pour un nouvel artiste.");
+    for (Genre genre : film.getGenres()) {
+      listeGenresFilm.getItems().add(genre.name());
     }
 
-    
-    @FXML
-    void actionBoutonNouveauFilm(ActionEvent event) {
-        // Effacer le contenu des champs liés au film
-        entreeTitreFilm.clear();
-        entreeAnneeFilm.clear();
-        listeChoixAgeLimite.getSelectionModel().clearSelection();
-        entreeNomPrenomRealisateur.clear();
-        listeGenresFilm.getItems().clear();
-        checkBoxLocationFilm.setSelected(false);
-        listeFilms.getSelectionModel().clearSelection();
+    checkBoxLocationFilm.setSelected(film.isEstOuvertalocation());
+    afficherMessageSucces("Film trouvé et affiché.");
+  }
 
-        afficherMessageSucces("Les champs ont été réinitialisés pour un nouveau film.");
+    
+  @FXML
+  void actionBoutonChoisirArtisteSelectionneRealisateur(ActionEvent event) {
+    String selectionArtiste = listeArtistes.getSelectionModel().getSelectedItem();
+
+    if (selectionArtiste == null || selectionArtiste.isEmpty()) {
+      afficherMessageErreur("Veuillez sélectionner un artiste dans la liste.");
+      return;
     }
 
+    // Extraire le nom et le prénom de l'artiste sélectionné
+    String[] nomPrenom = selectionArtiste.split(" ");
+    if (nomPrenom.length < 2) {
+      afficherMessageErreur("Format invalide pour l'artiste sélectionné.");
+      return;
+    }
+
+    String nom = nomPrenom[0];
+    String prenom = nomPrenom[1];
+
+    Artiste realisateur = gestionFilm.getArtiste(nom, prenom);
+    if (realisateur == null) {
+      afficherMessageErreur("L'artiste sélectionné n'est pas un réalisateur.");
+      return;
+    }
+
+    // Mettre à jour le champ réalisateur
+    entreeNomPrenomRealisateur.setText(realisateur.getNom() + " " + realisateur.getPrenom());
+    afficherMessageSucces("Le réalisateur a été choisi avec succès.");
+  }
+
     
 
     
-    @FXML
-    void actionMenuApropos(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("À propos");
-        alert.setHeaderText("Application de gestion de films");
-        alert.setContentText("Cette application permet de gérer des artistes et des films, "
+  @FXML
+  void actionBoutonNouveauArtiste(ActionEvent event) {
+    // Effacer le contenu des champs liés à l'artiste
+    entreeNomArtiste.clear();
+    entreePrenomArtiste.clear();
+    entreeNationaliteArtiste.clear();
+    listeArtistes.getSelectionModel().clearSelection();
+
+    afficherMessageSucces("Les champs ont été réinitialisés pour un nouvel artiste.");
+  }
+
+    
+  @FXML
+  void actionBoutonNouveauFilm(ActionEvent event) {
+    // Effacer le contenu des champs liés au film
+    entreeTitreFilm.clear();
+    entreeAnneeFilm.clear();
+    listeChoixAgeLimite.getSelectionModel().clearSelection();
+    entreeNomPrenomRealisateur.clear();
+    listeGenresFilm.getItems().clear();
+    checkBoxLocationFilm.setSelected(false);
+    listeFilms.getSelectionModel().clearSelection();
+
+    afficherMessageSucces("Les champs ont été réinitialisés pour un nouveau film.");
+  }
+
+    
+
+    
+  @FXML
+  void actionMenuApropos(ActionEvent event) {
+    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    alert.setTitle("À propos");
+    alert.setHeaderText("Application de gestion de films");
+    alert.setContentText("Cette application permet de gérer des artistes et des films, "
                 + "ainsi que de gérer la location de films pour les utilisateurs.\n"
                 + "Développée dans le cadre du projet L3 Informatique - UBO.");
-        alert.showAndWait();
-    }
+    alert.showAndWait();
+  }
 
     
 
@@ -364,414 +352,401 @@ public class AdministrationControleur {
     
 
     
-    @FXML
-    void actionListeSelectionArtiste(MouseEvent event) {
-        String selectionArtiste = listeArtistes.getSelectionModel().getSelectedItem();
+  @FXML
+  void actionListeSelectionArtiste(MouseEvent event) {
+    String selectionArtiste = listeArtistes.getSelectionModel().getSelectedItem();
 
-        if (selectionArtiste == null || selectionArtiste.isEmpty()) {
-            return; // Rien n'est sélectionné
-        }
-
-        // Extraire le nom et le prénom de l'artiste sélectionné
-        String[] nomPrenom = selectionArtiste.split(" ");
-        if (nomPrenom.length < 2) {
-            afficherMessageErreur("Format invalide pour l'artiste sélectionné.");
-            return;
-        }
-
-        String nom = nomPrenom[0];
-        String prenom = nomPrenom[1];
-
-        Artiste artiste = gestionFilm.getArtiste(nom, prenom);
-        if (artiste != null) {
-            entreeNomArtiste.setText(artiste.getNom());
-            entreePrenomArtiste.setText(artiste.getPrenom());
-            entreeNationaliteArtiste.setText(artiste.getNationalite());
-        } else {
-            afficherMessageErreur("Artiste introuvable dans le système.");
-        }
+    if (selectionArtiste == null || selectionArtiste.isEmpty()) {
+      return; // Rien n'est sélectionné
     }
+
+    // Extraire le nom et le prénom de l'artiste sélectionné
+    String[] nomPrenom = selectionArtiste.split(" ");
+    if (nomPrenom.length < 2) {
+      afficherMessageErreur("Format invalide pour l'artiste sélectionné.");
+      return;
+    }
+
+    String nom = nomPrenom[0];
+    String prenom = nomPrenom[1];
+
+    Artiste artiste = gestionFilm.getArtiste(nom, prenom);
+    if (artiste != null) {
+      entreeNomArtiste.setText(artiste.getNom());
+      entreePrenomArtiste.setText(artiste.getPrenom());
+      entreeNationaliteArtiste.setText(artiste.getNationalite());
+    } else {
+      afficherMessageErreur("Artiste introuvable dans le système.");
+    }
+  }
 
     
-    @FXML
-    void actionListeSelectionFilm(MouseEvent event) {
-        String selectionFilm = listeFilms.getSelectionModel().getSelectedItem();
+  @FXML
+  void actionListeSelectionFilm(MouseEvent event) {
+    String selectionFilm = listeFilms.getSelectionModel().getSelectedItem();
 
-        if (selectionFilm == null || selectionFilm.isEmpty()) {
-            return; // Rien n'est sélectionné
-        }
-
-        Film film = gestionFilm.getFilm(selectionFilm);
-        if (film != null) {
-            entreeTitreFilm.setText(film.getTitre());
-            entreeAnneeFilm.setText(String.valueOf(film.getAnnee()));
-            listeChoixAgeLimite.setValue(String.valueOf(film.getAgeLimite()));
-            entreeNomPrenomRealisateur.setText(film.getRealisateur().getNom() + " " + film.getRealisateur().getPrenom());
-
-            listeGenresFilm.getItems().clear();
-            for (Genre genre : film.getGenres()) {
-                listeGenresFilm.getItems().add(genre.name());
-            }
-
-            checkBoxLocationFilm.setSelected(film.isEstOuvertalocation());
-        } else {
-            afficherMessageErreur("Film introuvable dans le système.");
-        }
+    if (selectionFilm == null || selectionFilm.isEmpty()) {
+      return; // Rien n'est sélectionné
     }
 
-    @FXML
-    void actionBoutonAfficherFilmsActeurSelectionne(ActionEvent event) {
-        String selectionActeur = listeArtistes.getSelectionModel().getSelectedItem();
+    Film film = gestionFilm.getFilm(selectionFilm);
+    if (film != null) {
+      entreeTitreFilm.setText(film.getTitre());
+      entreeAnneeFilm.setText(String.valueOf(film.getAnnee()));
+      listeChoixAgeLimite.setValue(String.valueOf(film.getAgeLimite()));
+      entreeNomPrenomRealisateur.setText(film.getRealisateur().getNom() + " " 
+            + film.getRealisateur().getPrenom());
 
-        if (selectionActeur == null || selectionActeur.isEmpty()) {
-            afficherMessageErreur("Veuillez sélectionner un acteur.");
-            return;
-        }
+      listeGenresFilm.getItems().clear();
+      for (Genre genre : film.getGenres()) {
+        listeGenresFilm.getItems().add(genre.name());
+      }
 
-        // Extraire le nom et le prénom de l'acteur sélectionné
-        String[] nomPrenom = selectionActeur.split(" ");
-        if (nomPrenom.length < 2) {
-            afficherMessageErreur("Format invalide pour l'acteur sélectionné.");
-            return;
-        }
+      checkBoxLocationFilm.setSelected(film.isEstOuvertalocation());
+    } else {
+      afficherMessageErreur("Film introuvable dans le système.");
+    }
+  }
 
-        String nom = nomPrenom[0];
-        String prenom = nomPrenom[1];
+  @FXML
+  void actionBoutonAfficherFilmsActeurSelectionne(ActionEvent event) {
+    String selectionActeur = listeArtistes.getSelectionModel().getSelectedItem();
 
-        Artiste acteur = gestionFilm.getActeur(nom, prenom);
-        if (acteur == null) {
-            afficherMessageErreur("Acteur non trouvé dans le système.");
-            return;
-        }
-
-        // Afficher les films de cet acteur
-        Set<Film> filmsActeur = gestionFilm.ensembleFilmsActeur(acteur);
-        listeFilms.getItems().clear();
-
-        if (filmsActeur != null) {
-            for (Film film : filmsActeur) {
-                listeFilms.getItems().add(film.getTitre());
-            }
-        } else {
-            afficherMessageErreur("Aucun film trouvé pour cet acteur.");
-        }
-
-        labelListeFilms.setText("Films de l'acteur : " + acteur.getNom() + " " + acteur.getPrenom());
+    if (selectionActeur == null || selectionActeur.isEmpty()) {
+      afficherMessageErreur("Veuillez sélectionner un acteur.");
+      return;
     }
 
-    @FXML
-    void actionBoutonAfficherFilmsRealisateurSelectionne(ActionEvent event) {
-        String selectionArtiste = listeArtistes.getSelectionModel().getSelectedItem();
-
-        if (selectionArtiste == null || selectionArtiste.isEmpty()) {
-            afficherMessageErreur("Veuillez sélectionner un réalisateur dans la liste.");
-            return;
-        }
-
-        // Extraire le nom et le prénom de l'artiste sélectionné
-        String[] nomPrenom = selectionArtiste.split(" ");
-        if (nomPrenom.length < 2) {
-            afficherMessageErreur("Format invalide pour le réalisateur sélectionné.");
-            return;
-        }
-
-        String nom = nomPrenom[0];
-        String prenom = nomPrenom[1];
-
-        Artiste realisateur = gestionFilm.getRealisateur(nom, prenom);
-        if (realisateur == null) {
-            afficherMessageErreur("L'artiste sélectionné n'est pas un réalisateur.");
-            return;
-        }
-
-        Set<Film> films = gestionFilm.ensembleFilmsRealisateur(realisateur);
-        listeFilms.getItems().clear();
-
-        if (films != null) {
-            for (Film film : films) {
-                listeFilms.getItems().add(film.getTitre());
-            }
-        } else {
-            afficherMessageErreur("Aucun film trouvé pour ce réalisateur.");
-        }
-
-        labelListeFilms.setText("Films de " + realisateur.getNom() + " " + realisateur.getPrenom());
+    // Extraire le nom et le prénom de l'acteur sélectionné
+    String[] nomPrenom = selectionActeur.split(" ");
+    if (nomPrenom.length < 2) {
+      afficherMessageErreur("Format invalide pour l'acteur sélectionné.");
+      return;
     }
+
+    String nom = nomPrenom[0];
+    String prenom = nomPrenom[1];
+
+    Artiste acteur = gestionFilm.getActeur(nom, prenom);
+    if (acteur == null) {
+      afficherMessageErreur("Acteur non trouvé dans le système.");
+      return;
+    }
+
+    // Afficher les films de cet acteur
+    Set<Film> filmsActeur = gestionFilm.ensembleFilmsActeur(acteur);
+    listeFilms.getItems().clear();
+
+    if (filmsActeur != null) {
+      for (Film film : filmsActeur) {
+        listeFilms.getItems().add(film.getTitre());
+      }
+    } else {
+      afficherMessageErreur("Aucun film trouvé pour cet acteur.");
+    }
+
+    labelListeFilms.setText("Films de l'acteur : " 
+            + acteur.getNom() + " " + acteur.getPrenom());
+  }
+
+  @FXML
+  void actionBoutonAfficherFilmsRealisateurSelectionne(ActionEvent event) {
+    String selectionArtiste = listeArtistes.getSelectionModel().getSelectedItem();
+
+    if (selectionArtiste == null || selectionArtiste.isEmpty()) {
+      afficherMessageErreur("Veuillez sélectionner un réalisateur dans la liste.");
+      return;
+    }
+
+    // Extraire le nom et le prénom de l'artiste sélectionné
+    String[] nomPrenom = selectionArtiste.split(" ");
+    if (nomPrenom.length < 2) {
+      afficherMessageErreur("Format invalide pour le réalisateur sélectionné.");
+      return;
+    }
+
+    String nom = nomPrenom[0];
+    String prenom = nomPrenom[1];
+
+    Artiste realisateur = gestionFilm.getRealisateur(nom, prenom);
+    if (realisateur == null) {
+      afficherMessageErreur("L'artiste sélectionné n'est pas un réalisateur.");
+      return;
+    }
+
+    Set<Film> films = gestionFilm.ensembleFilmsRealisateur(realisateur);
+    listeFilms.getItems().clear();
+
+    if (films != null) {
+      for (Film film : films) {
+        listeFilms.getItems().add(film.getTitre());
+      }
+    } else {
+      afficherMessageErreur("Aucun film trouvé pour ce réalisateur.");
+    }
+
+    labelListeFilms.setText("Films de " + realisateur.getNom() + " " + realisateur.getPrenom());
+  }
 
     
-    @FXML
-    void actionBoutonAfficherTousActeursFilm(ActionEvent event) {
-        String selectionFilm = listeFilms.getSelectionModel().getSelectedItem();
+  @FXML
+  void actionBoutonAfficherTousActeursFilm(ActionEvent event) {
+    String selectionFilm = listeFilms.getSelectionModel().getSelectedItem();
 
-        if (selectionFilm == null || selectionFilm.isEmpty()) {
-            afficherMessageErreur("Veuillez sélectionner un film dans la liste.");
-            return;
-        }
-
-        Film film = gestionFilm.getFilm(selectionFilm);
-        if (film == null) {
-            afficherMessageErreur("Film introuvable dans le système.");
-            return;
-        }
-
-        Set<Artiste> acteurs = film.getActeurs();
-        listeArtistes.getItems().clear();
-
-        if (acteurs != null) {
-            for (Artiste acteur : acteurs) {
-                listeArtistes.getItems().add(acteur.getNom() + " " + acteur.getPrenom());
-            }
-        } else {
-            afficherMessageErreur("Aucun acteur trouvé pour ce film.");
-        }
-
-        labelListeArtistes.setText("Acteurs du film : " + film.getTitre());
+    if (selectionFilm == null || selectionFilm.isEmpty()) {
+      afficherMessageErreur("Veuillez sélectionner un film dans la liste.");
+      return;
     }
+
+    Film film = gestionFilm.getFilm(selectionFilm);
+    if (film == null) {
+      afficherMessageErreur("Film introuvable dans le système.");
+      return;
+    }
+
+    Set<Artiste> acteurs = film.getActeurs();
+    listeArtistes.getItems().clear();
+
+    if (acteurs != null) {
+      for (Artiste acteur : acteurs) {
+        listeArtistes.getItems().add(acteur.getNom() + " " + acteur.getPrenom());
+      }
+    } else {
+      afficherMessageErreur("Aucun acteur trouvé pour ce film.");
+    }
+
+    labelListeArtistes.setText("Acteurs du film : " + film.getTitre());
+  }
 
     
-    @FXML
-    void actionBoutonAfficherTousArtistes(ActionEvent event) {
-        try {
-            listeArtistes.getItems().clear();
-            Set<Artiste> artistes = gestionFilm.ensembleArtistes();
-            System.out.println("Acteurs récupérés : " + artistes);
+  @FXML
+  void actionBoutonAfficherTousArtistes(ActionEvent event) {
+    try {
+      listeArtistes.getItems().clear();
+      Set<Artiste> artistes = gestionFilm.ensembleArtistes();
+      System.out.println("Acteurs récupérés : " + artistes);
 
-           // artistes.addAll(gestionFilm.ensembleRealisateurs());
-           // System.out.println("Tous les artistes récupérés : " + artistes);
 
-            if (artistes.isEmpty()) {
-                System.out.println("Aucun artiste trouvé.");
-            }
+      if (artistes.isEmpty()) {
+        System.out.println("Aucun artiste trouvé.");
+      }
 
-            for (Artiste artiste : artistes) {
-                listeArtistes.getItems().add(artiste.getNom() + " " + artiste.getPrenom());
-            }
+      for (Artiste artiste : artistes) {
+        listeArtistes.getItems().add(artiste.getNom() + " " + artiste.getPrenom());
+      }
 
-            labelListeArtistes.setText("Liste de tous les artistes");
-        } catch (Exception e) {
-            e.printStackTrace();
-            afficherAlerte("Erreur", "Une erreur s'est produite lors de l'affichage des artistes.");
-        }
+      labelListeArtistes.setText("Liste de tous les artistes");
+    } catch (Exception e) {
+      e.printStackTrace();
+      afficherAlerte("Erreur", "Une erreur s'est produite lors de l'affichage des artistes.");
     }
+  }
 
 
 
     
-    @FXML
-    void actionBoutonAjouterActeurFilm(ActionEvent event) {
-        String selectionFilm = listeFilms.getSelectionModel().getSelectedItem();
-        String selectionArtiste = listeArtistes.getSelectionModel().getSelectedItem();
+  @FXML
+  void actionBoutonAjouterActeurFilm(ActionEvent event) {
+    String selectionFilm = listeFilms.getSelectionModel().getSelectedItem();
+    String selectionArtiste = listeArtistes.getSelectionModel().getSelectedItem();
 
-        if (selectionFilm == null || selectionArtiste == null) {
-            afficherMessageErreur("Veuillez sélectionner un film et un artiste.");
-            return;
-        }
-
-        // Extraire le nom et le prénom de l'artiste sélectionné
-        String[] nomPrenom = selectionArtiste.split(" ");
-        if (nomPrenom.length < 2) {
-            afficherMessageErreur("Format invalide pour l'artiste sélectionné.");
-            return;
-        }
-
-        String nom = nomPrenom[0];
-        String prenom = nomPrenom[1];
-
-        Artiste acteur = gestionFilm.getArtiste(nom, prenom);
-        Film film = gestionFilm.getFilm(selectionFilm);
-
-        if (acteur == null || film == null) {
-            afficherMessageErreur("Film ou artiste introuvable.");
-            return;
-        }
-
-        if (gestionFilm.ajouterActeurs(film, acteur)) {
-            afficherMessageSucces("L'acteur a été ajouté au film avec succès.");
-        } else {
-            afficherMessageErreur("Impossible d'ajouter l'acteur au film.");
-        }
+    if (selectionFilm == null || selectionArtiste == null) {
+      afficherMessageErreur("Veuillez sélectionner un film et un artiste.");
+      return;
     }
 
+    // Extraire le nom et le prénom de l'artiste sélectionné
+    String[] nomPrenom = selectionArtiste.split(" ");
+    if (nomPrenom.length < 2) {
+      afficherMessageErreur("Format invalide pour l'artiste sélectionné.");
+      return;
+    }
+
+    String nom = nomPrenom[0];
+    String prenom = nomPrenom[1];
+
+    Artiste acteur = gestionFilm.getArtiste(nom, prenom);
+    Film film = gestionFilm.getFilm(selectionFilm);
+
+    if (acteur == null || film == null) {
+      afficherMessageErreur("Film ou artiste introuvable.");
+      return;
+    }
+
+    if (gestionFilm.ajouterActeurs(film, acteur)) {
+      afficherMessageSucces("L'acteur a été ajouté au film avec succès.");
+    } else {
+      afficherMessageErreur("Impossible d'ajouter l'acteur au film.");
+    }
+  }
+
     
-    @FXML
-    void actionBoutonAjouterGenreFilm(ActionEvent event) {
-        String selectionFilm = listeFilms.getSelectionModel().getSelectedItem();
-        String genreSelectionne = listeTousGenres.getSelectionModel().getSelectedItem();
+  @FXML
+  void actionBoutonAjouterGenreFilm(ActionEvent event) {
+    String selectionFilm = listeFilms.getSelectionModel().getSelectedItem();
+    String genreSelectionne = listeTousGenres.getSelectionModel().getSelectedItem();
 
-        if (selectionFilm == null || genreSelectionne == null) {
-            afficherMessageErreur("Veuillez sélectionner un film et un genre.");
-            return;
-        }
+    if (selectionFilm == null || genreSelectionne == null) {
+      afficherMessageErreur("Veuillez sélectionner un film et un genre.");
+      return;
+    }
 
-        Film film = gestionFilm.getFilm(selectionFilm);
-        if (film == null) {
-            afficherMessageErreur("Film introuvable.");
-            return;
-        }
+    Film film = gestionFilm.getFilm(selectionFilm);
+    if (film == null) {
+      afficherMessageErreur("Film introuvable.");
+      return;
+    }
 
-        try {
-            Genre genre = Arrays.stream(Genre.values())
+    try {
+      Genre genre = Arrays.stream(Genre.values())
                                 .filter(g -> g.name().equalsIgnoreCase(genreSelectionne))
                                 .findFirst()
-                                .orElseThrow(() -> new IllegalArgumentException("Genre invalide : " + genreSelectionne));
+                                .orElseThrow(() -> new IllegalArgumentException("Genre invalide : " 
+                                      + genreSelectionne));
 
-            if (gestionFilm.ajouterGenres(film, genre)) {
-                afficherMessageSucces("Le genre a été ajouté au film avec succès.");
-                mettreAJourListeGenresFilm(film);
-            } else {
-                afficherMessageErreur("Impossible d'ajouter le genre au film.");
-            }
-        } catch (IllegalArgumentException e) {
-            afficherMessageErreur("Genre invalide : " + genreSelectionne);
-        }
+      if (gestionFilm.ajouterGenres(film, genre)) {
+        afficherMessageSucces("Le genre a été ajouté au film avec succès.");
+        mettreaJourlisteGenresfilm(film);
+      } else {
+        afficherMessageErreur("Impossible d'ajouter le genre au film.");
+      }
+    } catch (IllegalArgumentException e) {
+      afficherMessageErreur("Genre invalide : " + genreSelectionne);
+    }
+  }
+
+
+  private void mettreaJourlisteGenresfilm(Film film) {
+    listeGenresFilm.getItems().clear();
+    for (Genre genre : film.getGenres()) {
+      listeGenresFilm.getItems().add(genre.name());
+    }
+  }
+
+  @FXML
+  void actionBoutonChercherArtiste(ActionEvent event) {
+    String nom = entreeNomArtiste.getText();
+    String prenom = entreePrenomArtiste.getText();
+
+    if (nom.isEmpty() || prenom.isEmpty()) {
+      afficherMessageErreur("Veuillez remplir les champs"
+          + " Nom et Prénom pour rechercher un artiste.");
+      return;
     }
 
+    Artiste artiste = gestionFilm.getArtiste(nom, prenom);
 
-    private void mettreAJourListeGenresFilm(Film film) {
-        listeGenresFilm.getItems().clear();
-        for (Genre genre : film.getGenres()) {
-            listeGenresFilm.getItems().add(genre.name());
-        }
+    if (artiste == null) {
+      afficherMessageErreur("Artiste introuvable.");
+      return;
     }
 
-    @FXML
-    void actionBoutonChercherArtiste(ActionEvent event) {
-        String nom = entreeNomArtiste.getText();
-        String prenom = entreePrenomArtiste.getText();
+    listeArtistes.getItems().clear();
+    listeArtistes.getItems().add(artiste.getNom() + " " + artiste.getPrenom());
 
-        if (nom.isEmpty() || prenom.isEmpty()) {
-            afficherMessageErreur("Veuillez remplir les champs Nom et Prénom pour rechercher un artiste.");
-            return;
-        }
+    entreeNomArtiste.setText(artiste.getNom());
+    entreePrenomArtiste.setText(artiste.getPrenom());
+    entreeNationaliteArtiste.setText(artiste.getNationalite());
 
-        Artiste artiste = gestionFilm.getArtiste(nom, prenom);
+    labelListeArtistes.setText("Résultat de la recherche");
+  }
 
-        if (artiste == null) {
-            afficherMessageErreur("Artiste introuvable.");
-            return;
-        }
+    
+  @FXML
+  void actionBoutonAfficherArtistesRealisateurs(ActionEvent event) {
+    listeArtistes.getItems().clear();
+    Set<Artiste> realisateurs = gestionFilm.ensembleRealisateurs(); // Récupération des réalisateurs
 
-        listeArtistes.getItems().clear();
-        listeArtistes.getItems().add(artiste.getNom() + " " + artiste.getPrenom());
-
-        entreeNomArtiste.setText(artiste.getNom());
-        entreePrenomArtiste.setText(artiste.getPrenom());
-        entreeNationaliteArtiste.setText(artiste.getNationalite());
-
-        labelListeArtistes.setText("Résultat de la recherche");
+    for (Artiste realisateur : realisateurs) {
+      listeArtistes.getItems().add(realisateur.getNom() + " " + realisateur.getPrenom());
     }
 
+    labelListeArtistes.setText("Liste des réalisateurs");
+  }
+
     
-    @FXML
-    void actionBoutonAfficherArtistesRealisateurs(ActionEvent event) {
-        listeArtistes.getItems().clear();
-        Set<Artiste> realisateurs = gestionFilm.ensembleRealisateurs(); // Récupération des réalisateurs
+  @FXML
+  void actionBoutonAfficherArtistesActeurs(ActionEvent event) {
+    listeArtistes.getItems().clear();
+    Set<Artiste> acteurs = gestionFilm.ensembleActeurs(); // Récupération des acteurs
 
-        for (Artiste realisateur : realisateurs) {
-            listeArtistes.getItems().add(realisateur.getNom() + " " + realisateur.getPrenom());
-        }
-
-        labelListeArtistes.setText("Liste des réalisateurs");
+    for (Artiste acteur : acteurs) {
+      listeArtistes.getItems().add(acteur.getNom() + " " + acteur.getPrenom());
     }
 
-    
-    @FXML
-    void actionBoutonAfficherArtistesActeurs(ActionEvent event) {
-        listeArtistes.getItems().clear();
-        Set<Artiste> acteurs = gestionFilm.ensembleActeurs(); // Récupération des acteurs
+    labelListeArtistes.setText("Liste des acteurs");
+  }
 
-        for (Artiste acteur : acteurs) {
-            listeArtistes.getItems().add(acteur.getNom() + " " + acteur.getPrenom());
-        }
+  @FXML
+  void actionBoutonAfficherFilmsDuRealisateur(ActionEvent event) {
+    String nom = entreeNomArtiste.getText();
+    String prenom = entreePrenomArtiste.getText();
 
-        labelListeArtistes.setText("Liste des acteurs");
+    if (nom.isEmpty() || prenom.isEmpty()) {
+      afficherMessageErreur("Veuillez remplir les champs Nom et Prénom pour"
+          + " rechercher un réalisateur.");
+      return;
     }
 
-    @FXML
-    void actionBoutonAfficherFilmsDuRealisateur(ActionEvent event) {
-        String nom = entreeNomArtiste.getText();
-        String prenom = entreePrenomArtiste.getText();
+    Artiste realisateur = gestionFilm.getRealisateur(nom, prenom);
 
-        if (nom.isEmpty() || prenom.isEmpty()) {
-            afficherMessageErreur("Veuillez remplir les champs Nom et Prénom pour rechercher un réalisateur.");
-            return;
-        }
-
-        Artiste realisateur = gestionFilm.getRealisateur(nom, prenom);
-
-        if (realisateur == null) {
-            afficherMessageErreur("Réalisateur introuvable.");
-            return;
-        }
-
-        Set<Film> films = gestionFilm.ensembleFilmsRealisateur(realisateur);
-        listeFilms.getItems().clear();
-
-        if (films != null) {
-            for (Film film : films) {
-                listeFilms.getItems().add(film.getTitre());
-            }
-        } else {
-            afficherMessageErreur("Aucun film trouvé pour ce réalisateur.");
-        }
-
-        labelListeFilms.setText("Films de " + realisateur.getNom() + " " + realisateur.getPrenom());
+    if (realisateur == null) {
+      afficherMessageErreur("Réalisateur introuvable.");
+      return;
     }
 
+    Set<Film> films = gestionFilm.ensembleFilmsRealisateur(realisateur);
+    listeFilms.getItems().clear();
+
+    if (films != null) {
+      for (Film film : films) {
+        listeFilms.getItems().add(film.getTitre());
+      }
+    } else {
+      afficherMessageErreur("Aucun film trouvé pour ce réalisateur.");
+    }
+
+    labelListeFilms.setText("Films de " + realisateur.getNom() + " " + realisateur.getPrenom());
+  }
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    @FXML
-    void actionMenuCharger(ActionEvent event) {
+
+  @FXML
+  void actionMenuCharger(ActionEvent event) {
       
-    }
+  }
     
-    @FXML
-    void actionMenuSauvegarder(ActionEvent event) {
+  @FXML
+  void actionMenuSauvegarder(ActionEvent event) {
       
-    }
+  }
     
-    @FXML
-    void actionMenuQuitter(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Quitter l'application");
-        alert.setHeaderText("Confirmation");
-        alert.setContentText("Êtes-vous sûr de vouloir quitter l'application ?");
+  @FXML
+  void actionMenuQuitter(ActionEvent event) {
+    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    alert.setTitle("Quitter l'application");
+    alert.setHeaderText("Confirmation");
+    alert.setContentText("Êtes-vous sûr de vouloir quitter l'application ?");
 
-        if (alert.showAndWait().get() == ButtonType.OK) {
-            Platform.exit();
-        }
+    if (alert.showAndWait().get() == ButtonType.OK) {
+      Platform.exit();
     }
+  }
     
     
     
-    private void afficherMessageErreur(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Erreur");
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
+  private void afficherMessageErreur(String message) {
+    Alert alert = new Alert(Alert.AlertType.ERROR);
+    alert.setTitle("Erreur");
+    alert.setContentText(message);
+    alert.showAndWait();
+  }
 
-    private void afficherMessageSucces(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Succès");
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
+  private void afficherMessageSucces(String message) {
+    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    alert.setTitle("Succès");
+    alert.setContentText(message);
+    alert.showAndWait();
+  }
 
 }

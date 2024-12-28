@@ -134,7 +134,7 @@ public class Artiste {
     }
     Artiste artiste = (Artiste) obj;
     return Objects.equals(nom, artiste.nom) && Objects.equals(prenom, artiste.prenom) 
-      && Objects.equals(nationalite, artiste.nationalite);	
+      && Objects.equals(nationalite, artiste.nationalite);
                
   }
 

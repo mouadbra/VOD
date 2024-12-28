@@ -240,12 +240,17 @@ public Set<Artiste> ensembleActeurs() {
   
   
   
+  /**
+   * Renvoie l'ensemble des réalisateurs présents dans le système.
+   *
+   * @return un ensemble contenant tous les réalisateurs
+   *          ou un ensemble vide s'il n'y a aucun réalisateur
+   */
   
   public Set<Artiste> ensembleArtistes() {
-  //Set<Artiste> realisateurs = new HashSet<>();
-	  
-  return artistes;
-}
+
+    return artistes;
+  }
   /**
    * Renvoie l'ensemble des films réalisés par un réalisateur donné.
    *
