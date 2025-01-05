@@ -1,15 +1,17 @@
 package location;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Classe pour gérer les films et les artistes dans le système,
  * implémentant les services d'administration définis par l'interface InterAdministration.
  */
-public class GestionFilm implements InterAdministration {
-
+public class GestionFilm implements InterAdministration , Serializable {
+    private static final long serialVersionUID = 1L;
   // Ensemble des films disponibles pour la location
   private Set<Film> filmsLouable;
 
@@ -241,10 +243,10 @@ public Set<Artiste> ensembleActeurs() {
   
   
   /**
-   * Renvoie l'ensemble des réalisateurs présents dans le système.
+   * Renvoie l'ensemble des acteurs présents dans le système.
    *
-   * @return un ensemble contenant tous les réalisateurs
-   *          ou un ensemble vide s'il n'y a aucun réalisateur
+   * @return un ensemble contenant tous les acteurs
+   *          ou un ensemble vide s'il n'y a aucun acteurs
    */
   
   public Set<Artiste> ensembleArtistes() {
@@ -433,6 +435,20 @@ public Set<Artiste> ensembleActeurs() {
   }
 
   
+  
+  public void setFilms(Set<Film> films) {
+	    this.films = new HashSet<>(films);
+	    // Créer un nouveau Set pour les films louables
+	    this.filmsLouable = new HashSet<>();
+	}
+  
+  
+  public Set<Artiste> getArtistes() {
+	    return artistes;
+	}
+	public void setArtistes(Set<Artiste> artistes) {
+	    this.artistes = artistes;
+	}
   
   
 }

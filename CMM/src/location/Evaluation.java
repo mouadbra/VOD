@@ -1,5 +1,7 @@
 package location;
 
+import java.io.Serializable;
+
 /**
  * Description de la classe evaluation : note entre 0 et 5, 
  * utilisateur de la classe Utilisateur qui met une note, 
@@ -9,7 +11,8 @@ package location;
  * @author Bouberraga Cherif
  */
 
-public class Evaluation {
+public class Evaluation implements Serializable {
+    private static final long serialVersionUID = 1L;
   /**
   * La note ajoutée entre 0 et 5.
   */

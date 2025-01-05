@@ -1,5 +1,6 @@
 package location;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,9 +8,10 @@ import java.util.Set;
    * Classe GestionUtilisateur.
    * Gère les utilisateurs et leurs connexions au système.
    */
-public class GestionUtilisateur {
+public class GestionUtilisateur implements Serializable {
+    private static final long serialVersionUID = 1L;
   private Utilisateur utilisateurConnecte;
-  private final Set<Utilisateur> utilisateurs;
+  private  Set<Utilisateur> utilisateurs;
 
   /**
      * Constructeur par défaut.
@@ -144,4 +146,11 @@ public class GestionUtilisateur {
   public Set<Utilisateur> getUtilisateurs() {
     return new HashSet<>(utilisateurs);
   }
+  
+  
+  public void setUtilisateurs(Set<Utilisateur> utilisateurs) {
+	    this.utilisateurs = new HashSet<>(utilisateurs);
+	    // Réinitialiser l'utilisateur connecté à null
+	    this.utilisateurConnecte = null;
+	}
 }

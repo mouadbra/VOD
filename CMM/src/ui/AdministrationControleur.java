@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,6 +15,8 @@ import location.Artiste;
 import location.Film;
 import location.Genre;
 import location.GestionFilm;
+import location.GestionUtilisateur;
+import location.Gestionnaire;
 
 /**
  * Controleur JavaFX de la fenêtre d'administration.
@@ -70,15 +73,25 @@ public class AdministrationControleur {
     private ListView<String> listeTousGenres;
 
   static GestionFilm gestionFilm;
+  
+  static GestionUtilisateur gestionUtilisateur;
+  
+  static Gestionnaire gestionnaire;
 
   @FXML
     void initialize() {
     gestionFilm = new GestionFilm();
+    gestionUtilisateur = new GestionUtilisateur();
+    gestionnaire = new Gestionnaire(gestionUtilisateur, gestionFilm);
     // Initialisation des limites d'âge pour la liste déroulante
     listeChoixAgeLimite.getItems().addAll("0", "10", "12", "16", "18");
 
     // Initialisation des genres disponibles
-    listeTousGenres.getItems().addAll("Action", "Comedie", "Drame", "Horreur");
+    listeTousGenres.getItems().addAll(
+            Arrays.stream(Genre.values())
+            .map(Enum::name)
+            .collect(Collectors.toList())
+    );
 
     // Chargement initial des artistes et des films dans leurs listes respectives
     mettreAjourListeartistes();
@@ -524,7 +537,7 @@ public class AdministrationControleur {
     try {
       listeArtistes.getItems().clear();
       Set<Artiste> artistes = gestionFilm.ensembleArtistes();
-      System.out.println("Acteurs récupérés : " + artistes);
+      System.out.println("Artistes récupérés : " + artistes);
 
 
       if (artistes.isEmpty()) {
@@ -713,12 +726,66 @@ public class AdministrationControleur {
 
   @FXML
   void actionMenuCharger(ActionEvent event) {
+      FileChooser fileChooser = new FileChooser();
+      fileChooser.setTitle("Charger les données");
+      fileChooser.getExtensionFilters().add(
+          new FileChooser.ExtensionFilter("Fichier de données", "*.dat")
+      );
       
+      File fichier = fileChooser.showOpenDialog(null);
+      if (fichier != null) {
+          try {
+              // Utilisation de l'interface InterSauvegarde implémentée par votre gestionnaire
+              gestionnaire.chargerDonnees(fichier.getAbsolutePath());
+              
+              // Mise à jour des listes dans l'interface
+              mettreaJourlistefilms();
+              mettreAjourListeartistes();
+              
+              Alert alert = new Alert(Alert.AlertType.INFORMATION);
+              alert.setTitle("Chargement");
+              alert.setHeaderText(null);
+              alert.setContentText("Les données ont été chargées avec succès !");
+              alert.showAndWait();
+              
+          } catch (IOException e) {
+              Alert alert = new Alert(Alert.AlertType.ERROR);
+              alert.setTitle("Erreur de chargement");
+              alert.setHeaderText(null);
+              alert.setContentText("Une erreur est survenue lors du chargement : " + e.getMessage());
+              alert.showAndWait();
+          }
+      }
   }
     
   @FXML
   void actionMenuSauvegarder(ActionEvent event) {
+      FileChooser fileChooser = new FileChooser();
+      fileChooser.setTitle("Sauvegarder les données");
+      fileChooser.getExtensionFilters().add(
+          new FileChooser.ExtensionFilter("Fichier de données", "*.dat")
+      );
       
+      File fichier = fileChooser.showSaveDialog(null);
+      if (fichier != null) {
+          try {
+              // Utilisation de l'interface InterSauvegarde implémentée par votre gestionnaire
+              gestionnaire.sauvegarderDonnees(fichier.getAbsolutePath());
+              
+              Alert alert = new Alert(Alert.AlertType.INFORMATION);
+              alert.setTitle("Sauvegarde");
+              alert.setHeaderText(null);
+              alert.setContentText("Les données ont été sauvegardées avec succès !");
+              alert.showAndWait();
+              
+          } catch (IOException e) {
+              Alert alert = new Alert(Alert.AlertType.ERROR);
+              alert.setTitle("Erreur de sauvegarde");
+              alert.setHeaderText(null);
+              alert.setContentText("Une erreur est survenue lors de la sauvegarde : " + e.getMessage());
+              alert.showAndWait();
+          }
+      }
   }
     
   @FXML

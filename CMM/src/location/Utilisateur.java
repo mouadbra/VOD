@@ -1,5 +1,6 @@
 package location;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -8,7 +9,8 @@ import java.util.Set;
  * Contient les informations personnelles de l'utilisateur, ses films en location,
  * ses évaluations, et son état de connexion.
  */
-public class Utilisateur {
+public class Utilisateur implements Serializable {
+    private static final long serialVersionUID = 1L;
   private String pseudo;
   private String motDePasse;
   private InformationPersonnelle info;
