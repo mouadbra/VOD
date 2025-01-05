@@ -1,6 +1,10 @@
 package location;
 
+
 import java.io.Serializable;
+
+import java.util.Objects;
+
 
 /**
  * Description de la classe evaluation : note entre 0 et 5, 
@@ -159,4 +163,22 @@ public class Evaluation implements Serializable {
         + " | Commentaire : " + commentaire 
         + " | Utilisateur : " + utilis.getPseudo());
   }
+  
+  
+  
+  
+  @Override
+  public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      Evaluation that = (Evaluation) o;
+      return film.equals(that.film) && utilis.equals(that.utilis);
+  }
+
+  @Override
+  public int hashCode() {
+      return Objects.hash(film, utilis);
+  }
+
+  
 }
