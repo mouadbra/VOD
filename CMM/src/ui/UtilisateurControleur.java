@@ -127,7 +127,11 @@ public class UtilisateurControleur {
           return;
       }
 
-	Film film = gestionnaire.getFilm(filmSelectionne);
+      // Extraire le titre du film
+      String titre = filmSelectionne.split(" \\(")[0]; // Diviser par " (" et prendre la première partie
+      
+      // Récupérer l'objet Film
+      Film film = gestionnaire.getFilm(titre);
       if (film == null) {
           afficherMessageErreur("Film introuvable !");
           return;
@@ -256,7 +260,7 @@ public class UtilisateurControleur {
       Artiste acteur = gestionnaire.getActeur(acteurSelectionne.split(" ")[0], 
                                                         acteurSelectionne.split(" ")[1]);
       if (acteur == null) {
-          afficherMessageErreur("Réalisateur introuvable !");
+          afficherMessageErreur("Acteur introuvable !");
           return;
       }
 
@@ -275,24 +279,28 @@ public class UtilisateurControleur {
   
   @FXML
   void actionBoutonAfficherFilmsGenre(ActionEvent event) {
+      // Récupérer le genre sélectionné
       String genreSelectionne = listeGenresFilm.getSelectionModel().getSelectedItem();
       if (genreSelectionne == null) {
           afficherMessageErreur("Veuillez sélectionner un genre !");
           return;
       }
 
-      Set<Film> films = gestionnaire.ensembleFilmsGenre(genreSelectionne);
+      // Récupérer les films associés au genre
+      Set<Film> films = gestionnaire.ensembleFilmsGenre(genreSelectionne.trim());
       listeFilms.getItems().clear();
-      
+
       if (films == null || films.isEmpty()) {
           afficherMessageErreur("Aucun film trouvé pour ce genre.");
       } else {
+          // Ajouter les films à la liste
           for (Film film : films) {
               listeFilms.getItems().add(film.getTitre() + " (" + film.getAnnee() + ")");
           }
           afficherMessageSucces("Liste des films du genre mise à jour.");
       }
   }
+
 
   @FXML
   void actionBoutonAfficherFilmsRealisateurSelectionne(ActionEvent event) {
@@ -385,6 +393,7 @@ public class UtilisateurControleur {
               listeFilms.getItems().add(film.getTitre() + " (" + film.getAnnee() + ")");
           }
           afficherMessageSucces("Liste des films mise à jour.");
+          remplirListeGenresFilm(); 
       }
   }
 
@@ -410,7 +419,7 @@ public class UtilisateurControleur {
   
   @FXML
   void actionBoutonChercherFilm(ActionEvent event) {
-      String titre = entreeTitreFilm.getText();
+      String titre = entreeTitreFilm.getText().trim(); // Supprime les espaces superflus
 
       if (titre.isEmpty()) {
           afficherMessageErreur("Veuillez entrer le titre du film !");
@@ -418,12 +427,26 @@ public class UtilisateurControleur {
       }
 
       Film film = gestionnaire.getFilm(titre);
+
       if (film == null) {
           afficherMessageErreur("Film introuvable !");
-      } else {
-          afficherMessageSucces("Film trouvé : " + film.getTitre() + " (" + film.getAnnee() + ")");
+          return;
       }
+
+      // Afficher le film dans la liste
+      listeFilms.getItems().clear();
+      listeFilms.getItems().add(film.getTitre() + " (" + film.getAnnee() + ")");
+
+      // Remplir les champs d'information
+      entreeTitreFilm.setText(film.getTitre());
+      entreeAnneeFilm.setText(String.valueOf(film.getAnnee()));
+      entreeAgeLimiteFilm.setText(String.valueOf(film.getAgeLimite()));
+      entreeNomPrenomRealisateurFilm.setText(film.getRealisateur().getPrenom() + " " + film.getRealisateur().getNom());
+      entreeGenresFilm.setText(film.getGenres().toString().replaceAll("[\\[\\]]", "")); // Supprime les crochets des genres
+
+      afficherMessageSucces("Film trouvé : " + film.getTitre() + " (" + film.getAnnee() + ")");
   }
+
 
   
   @FXML
@@ -480,7 +503,13 @@ public class UtilisateurControleur {
       }
 
       int note = listeNoteEvaluation.getValue();
-      String commentaire = texteCommentaire.getText();
+//      String commentaire = texteCommentaire.getText();
+      String commentaire = texteCommentaire.getText().trim(); // Supprimer les espaces inutiles
+
+      if (commentaire.isEmpty()) {
+          commentaire = null; // Traiter les commentaires vides comme null
+      }
+
 
       try {
           // Création et ajout de l'évaluation
@@ -667,18 +696,58 @@ public class UtilisateurControleur {
   void actionSelectionFilm(MouseEvent event) {
       String filmSelectionne = listeFilms.getSelectionModel().getSelectedItem();
       
-      
-      
       if (filmSelectionne != null) {
           afficherMessageSucces("Film sélectionné : " + filmSelectionne);
           
+          // Extraire le titre du film
           String titre = filmSelectionne.split(" \\(")[0]; // Diviser par " (" et prendre la première partie
-
+          
+          // Récupérer l'objet Film
           Film film = gestionnaire.getFilm(titre);
-          miseAJourListeEvaluations(film);
+          if (film == null) {
+              afficherMessageErreur("Film introuvable !");
+              return;
+          }
 
+          // Mise à jour des champs avec les détails du film
+          entreeTitreFilm.setText(film.getTitre());
+          entreeAnneeFilm.setText(String.valueOf(film.getAnnee()));
+          entreeAgeLimiteFilm.setText(String.valueOf(film.getAgeLimite()));
+          entreeNomPrenomRealisateurFilm.setText(film.getRealisateur().getPrenom() + " " + film.getRealisateur().getNom());
+
+          // Concaténer les genres pour afficher dans un champ
+          String genres = String.join(", ", film.getGenres().stream()
+                                                 .map(Genre::name)
+                                                 .toList());
+          entreeGenresFilm.setText(genres);
+
+          // Mettre à jour la checkbox pour indiquer si le film est louable
+          checkFilmLouable.setSelected(film.isEstOuvertalocation());
+
+          // Mettre à jour la liste des évaluations
+          miseAJourListeEvaluations(film);
       }
   }
+  
+  
+  @FXML
+  public void remplirListeGenresFilm() {
+      listeGenresFilm.getItems().clear(); // Vider la liste avant de la remplir
+
+      // Récupérer les genres via le gestionnaire
+      Set<Genre> genres = gestionnaire.ensembleGenres(); // Exemple de méthode à ajouter dans Gestionnaire
+
+      if (genres != null && !genres.isEmpty()) {
+          for (Genre genre : genres) {
+              listeGenresFilm.getItems().add(genre.name()); // Ajouter les genres par leur nom
+          }
+          afficherMessageSucces("Liste des genres mise à jour !");
+      } else {
+          afficherMessageErreur("Aucun genre de film trouvé !");
+      }
+  }
+
+
 
   
   @FXML
@@ -686,7 +755,8 @@ public class UtilisateurControleur {
 	  gestionnaireFilm = AdministrationControleur.gestionFilm;
 	  gestionnaireUtilisateur = new GestionUtilisateur();
 	  gestionnaire = new Gestionnaire(gestionnaireUtilisateur, gestionnaireFilm);
-	    listeNoteEvaluation.getItems().addAll(0, 1, 2, 3, 4, 5);
+	  listeNoteEvaluation.getItems().addAll(0, 1, 2, 3, 4, 5);
+
 
 	  
 	  
@@ -722,15 +792,21 @@ public class UtilisateurControleur {
 
 	    if (evaluations != null && !evaluations.isEmpty()) {
 	        for (Evaluation evaluation : evaluations) {
+	            // Construire la chaîne en fonction de la présence d'un commentaire
 	            String item = "Auteur: " + evaluation.getUtilisateurPseudo() + 
-	                          ", Note: " + evaluation.getNote() + 
-	                          ", Commentaire: " + evaluation.getCommentaire();
+	                          ", Note: " + evaluation.getNote();
+
+	            if (evaluation.getCommentaire() != null && !evaluation.getCommentaire().isEmpty()) {
+	                item += ", Commentaire: " + evaluation.getCommentaire();
+	            }
+
 	            listeEvaluations.getItems().add(item);
 	        }
 	    } else {
 	        afficherMessageErreur("Aucune évaluation pour ce film.");
 	    }
 	}
+
     
 	private void miseAJourEvaluationMoyenne(Film film) {
 	    if (film == null) {
