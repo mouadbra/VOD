@@ -18,7 +18,7 @@ import io.InterSauvegarde;
  *
  * @author Mouad Brahmi, Mokhtar Rida
  */
-public class Gestionnaire implements InterUtilisateur,InterSauvegarde , Serializable {
+public class Gestionnaire implements InterUtilisateur, Serializable {
     private static final long serialVersionUID = 1L;
   private GestionUtilisateur gestionUtilisateur;
   private GestionFilm gestionFilm;
@@ -552,7 +552,7 @@ public class Gestionnaire implements InterUtilisateur,InterSauvegarde , Serializ
     return (film == null) ? -2 : evaluationMoyenne(film);
   }
 
-  @Override
+ /* @Override
   public void sauvegarderDonnees(String nomFichier) throws IOException {
       try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nomFichier))) {
           HashMap<String, Object> donnees = new HashMap<>();
@@ -594,7 +594,7 @@ public class Gestionnaire implements InterUtilisateur,InterSauvegarde , Serializ
           }
       }
   }
-
+*/
 
 
 

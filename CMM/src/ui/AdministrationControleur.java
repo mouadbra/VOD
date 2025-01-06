@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import io.Gestionio;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -77,12 +79,19 @@ public class AdministrationControleur {
   static GestionUtilisateur gestionUtilisateur;
   
   static Gestionnaire gestionnaire;
+  
+  static Gestionio gestionnaireio;
 
   @FXML
     void initialize() {
+	  
     gestionFilm = new GestionFilm();
-    gestionUtilisateur = new GestionUtilisateur();
+	gestionUtilisateur = new GestionUtilisateur();
+	gestionnaireio = new Gestionio(gestionUtilisateur, gestionFilm);
+
     gestionnaire = new Gestionnaire(gestionUtilisateur, gestionFilm);
+    
+    
     // Initialisation des limites d'âge pour la liste déroulante
     listeChoixAgeLimite.getItems().addAll("0", "10", "12", "16", "18");
 
@@ -736,7 +745,7 @@ public class AdministrationControleur {
       if (fichier != null) {
           try {
               // Utilisation de l'interface InterSauvegarde implémentée par votre gestionnaire
-              gestionnaire.chargerDonnees(fichier.getAbsolutePath());
+              gestionnaireio.chargerDonnees(fichier.getAbsolutePath());
               
               // Mise à jour des listes dans l'interface
               mettreaJourlistefilms();
@@ -770,7 +779,7 @@ public class AdministrationControleur {
       if (fichier != null) {
           try {
               // Utilisation de l'interface InterSauvegarde implémentée par votre gestionnaire
-              gestionnaire.sauvegarderDonnees(fichier.getAbsolutePath());
+              gestionnaireio.sauvegarderDonnees(fichier.getAbsolutePath());
               
               Alert alert = new Alert(Alert.AlertType.INFORMATION);
               alert.setTitle("Sauvegarde");
