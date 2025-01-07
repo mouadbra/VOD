@@ -264,7 +264,13 @@ public class Gestionnaire implements InterUtilisateur, Serializable {
 
     if (evaluation == null) {
       throw new LocationException("evaluation n'existe pas");
-	
+
+    }
+    if (!utilisateurConnecte.gethistoriqueFilmsEnLocation().contains(film) 
+        && eval.getCommentaire() != null) {
+      throw new LocationException("vous pouvez pas evalue ce film, il existe pas "
+        + "dans votre historique de location");
+
     }
     film.supprimerEvaluation(evaluation);
     utilisateurConnecte.supprimerEvaluation(evaluation);

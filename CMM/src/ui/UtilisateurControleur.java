@@ -147,6 +147,8 @@ public class UtilisateurControleur {
               listeArtistes.getItems().add(acteur.getNom() + " " + acteur.getPrenom());
           }
           afficherMessageSucces("Acteurs affichés pour le film sélectionné.");
+          labelListeArtistes.setText("les Acteurs du Film Sélecetionne");
+
       }
   }
 
@@ -163,6 +165,8 @@ public class UtilisateurControleur {
               listeArtistes.getItems().add(acteur.getNom() + " " + acteur.getPrenom());
           }
           afficherMessageSucces("Liste des acteurs mise à jour.");
+          labelListeArtistes.setText("tous les acteurs");
+
       }
   }
 
@@ -179,6 +183,8 @@ public class UtilisateurControleur {
               listeArtistes.getItems().add(realisateur.getNom() + " " + realisateur.getPrenom());
           }
           afficherMessageSucces("Liste des réalisateurs mise à jour.");
+          labelListeArtistes.setText("tous les Réalisateurs");
+
       }
   }
 
@@ -244,6 +250,8 @@ public class UtilisateurControleur {
               listeFilms.getItems().add(film.getTitre() + " (" + film.getAnnee() + ")");
           }
           afficherMessageSucces("Liste des films du réalisateur mise à jour.");
+          labelListeFilms.setText("les Films pour le Réalisateur Sélectionne");
+
       }
   }
 
@@ -274,6 +282,9 @@ public class UtilisateurControleur {
               listeFilms.getItems().add(film.getTitre() + " (" + film.getAnnee() + ")");
           }
           afficherMessageSucces("Liste des films du réalisateur mise à jour.");
+          labelListeFilms.setText("les Films pour l'Acteur Sélectionne");
+
+          
       }
   }
   
@@ -298,6 +309,8 @@ public class UtilisateurControleur {
               listeFilms.getItems().add(film.getTitre() + " (" + film.getAnnee() + ")");
           }
           afficherMessageSucces("Liste des films du genre mise à jour.");
+          labelListeFilms.setText("les Films pour le genre Sélectionne");
+
       }
   }
 
@@ -332,6 +345,8 @@ public class UtilisateurControleur {
               listeFilms.getItems().add(film.getTitre() + " (" + film.getAnnee() + ")");
           }
           afficherMessageSucces("Liste des films du réalisateur mise à jour.");
+          labelListeFilms.setText("les Films pour le Réalisateur Sélectionne");
+
       }
   }
 
@@ -368,7 +383,7 @@ public class UtilisateurControleur {
   void actionBoutonAfficherTousArtistes(ActionEvent event) {
       listeArtistes.getItems().clear();
       Set<Artiste> artistes = gestionnaireFilm.ensembleArtistes();
-      artistes.addAll(gestionnaire.ensembleRealisateurs());
+//      artistes.addAll(gestionnaire.ensembleRealisateurs());
 
       if (artistes.isEmpty()) {
           afficherMessageErreur("Aucun artiste trouvé !");
@@ -377,6 +392,8 @@ public class UtilisateurControleur {
               listeArtistes.getItems().add(artiste.getNom() + " " + artiste.getPrenom());
           }
           afficherMessageSucces("Liste des artistes mise à jour.");
+          labelListeArtistes.setText("Tous les Artistes");
+
       }
   }
 
@@ -394,14 +411,16 @@ public class UtilisateurControleur {
           }
           afficherMessageSucces("Liste des films mise à jour.");
           remplirListeGenresFilm(); 
+          labelListeFilms.setText("tous les Films");
+
       }
   }
 
   
   @FXML
   void actionBoutonChercherActeur(ActionEvent event) {
-      String nom = entreeNomArtiste.getText();
-      String prenom = entreePrenomArtiste.getText();
+      String nom = entreeNomArtiste.getText().trim(); // Supprime les espaces inutiles
+      String prenom = entreePrenomArtiste.getText().trim();
 
       if (nom.isEmpty() || prenom.isEmpty()) {
           afficherMessageErreur("Veuillez entrer le nom et le prénom de l'acteur !");
@@ -409,12 +428,27 @@ public class UtilisateurControleur {
       }
 
       Artiste acteur = gestionnaire.getActeur(nom, prenom);
+
       if (acteur == null) {
           afficherMessageErreur("Acteur introuvable !");
-      } else {
-          afficherMessageSucces("Acteur trouvé : " + acteur.getNom() + " " + acteur.getPrenom() + " (" + acteur.getNationalite() + ")");
+          return;
       }
+
+      // Remplir les champs d'information
+      entreePrenomArtiste.setText(acteur.getPrenom());
+      entreeNomArtiste.setText(acteur.getNom());
+      entreeNationaliteArtiste.setText(acteur.getNationalite());
+
+      // Mettre à jour la liste avec uniquement l'acteur trouvé
+      listeArtistes.getItems().clear();
+      listeArtistes.getItems().add(acteur.getPrenom() + " " + acteur.getNom() + " (" + acteur.getNationalite() + ")");
+      
+      labelListeArtistes.setText("l'acteur cherché");
+
+
+      afficherMessageSucces("Acteur trouvé : " + acteur.getNom() + " " + acteur.getPrenom() + " (" + acteur.getNationalite() + ")");
   }
+
 
   
   @FXML
@@ -445,14 +479,16 @@ public class UtilisateurControleur {
       entreeGenresFilm.setText(film.getGenres().toString().replaceAll("[\\[\\]]", "")); // Supprime les crochets des genres
 
       afficherMessageSucces("Film trouvé : " + film.getTitre() + " (" + film.getAnnee() + ")");
+      labelListeFilms.setText("le Film cherché");
+
   }
 
 
   
   @FXML
   void actionBoutonChercherRealisateur(ActionEvent event) {
-      String nom = entreeNomArtiste.getText();
-      String prenom = entreePrenomArtiste.getText();
+      String nom = entreeNomArtiste.getText().trim();
+      String prenom = entreePrenomArtiste.getText().trim();
 
       if (nom.isEmpty() || prenom.isEmpty()) {
           afficherMessageErreur("Veuillez entrer le nom et le prénom du réalisateur !");
@@ -460,12 +496,29 @@ public class UtilisateurControleur {
       }
 
       Artiste realisateur = gestionnaire.getRealisateur(nom, prenom);
+
       if (realisateur == null) {
           afficherMessageErreur("Réalisateur introuvable !");
-      } else {
-          afficherMessageSucces("Réalisateur trouvé : " + realisateur.getNom() + " " + realisateur.getPrenom() + " (" + realisateur.getNationalite() + ")");
+          return;
       }
+
+      // Remplir les champs d'information
+      entreePrenomArtiste.setText(realisateur.getPrenom());
+      entreeNomArtiste.setText(realisateur.getNom());
+      entreeNationaliteArtiste.setText(realisateur.getNationalite());
+
+      // Mettre à jour la liste avec uniquement le réalisateur trouvé
+      listeArtistes.getItems().clear();
+      listeArtistes.getItems().add(realisateur.getPrenom() + " " + realisateur.getNom() + " (" + realisateur.getNationalite() + ")");
+
+      afficherMessageSucces("Réalisateur trouvé : " + realisateur.getNom() + " " + realisateur.getPrenom() + " (" + realisateur.getNationalite() + ")");
+      
+      
+      labelListeArtistes.setText("le Réalisateur cherché");
+
+      
   }
+
 
   
   @FXML
@@ -657,7 +710,11 @@ public class UtilisateurControleur {
       }
 
       int note = listeNoteEvaluation.getValue();
-      String commentaire = texteCommentaire.getText();
+      String commentaire = texteCommentaire.getText().trim(); // Supprimer les espaces inutiles
+
+      if (commentaire.isEmpty()) {
+          commentaire = null; // Traiter les commentaires vides comme null
+      }      
 
       try {
           Evaluation nouvelleEvaluation = new Evaluation(note, commentaire, gestionnaireUtilisateur.getUtilisateurConnecte(), film);
@@ -673,6 +730,7 @@ public class UtilisateurControleur {
       }
   }
 
+
   
   @FXML
   void actionSelectionArtiste(MouseEvent event) {
@@ -686,10 +744,31 @@ public class UtilisateurControleur {
   @FXML
   void actionSelectionEvaluation(MouseEvent event) {
       String evaluationSelectionnee = listeEvaluations.getSelectionModel().getSelectedItem();
-      if (evaluationSelectionnee != null) {
-          afficherMessageSucces("Évaluation sélectionnée : " + evaluationSelectionnee);
+      
+      if (evaluationSelectionnee == null) {
+          afficherMessageErreur("Aucune évaluation sélectionnée !");
+          return;
       }
+
+      // Extraire les informations de l'évaluation sélectionnée
+      String[] details = evaluationSelectionnee.split(", ");
+      if (details.length < 2) {
+          afficherMessageErreur("Format de l'évaluation incorrect !");
+          return;
+      }
+
+      String auteur = details[0].replace("Auteur: ", "").trim();
+      String noteStr = details[1].replace("Note: ", "").trim();
+      String commentaire = details.length > 2 ? details[2].replace("Commentaire: ", "").trim() : null;
+
+      // Mise à jour des champs
+      entreeAuteurEvaluation.setText(auteur);
+      listeNoteEvaluation.setValue(Integer.parseInt(noteStr));
+      texteCommentaire.setText(commentaire != null ? commentaire : ""); // Si null, vider le champ
+
+      afficherMessageSucces("Évaluation sélectionnée : Auteur=" + auteur + ", Note=" + noteStr + ", Commentaire=" + (commentaire != null ? commentaire : "Aucun commentaire"));
   }
+
 
   
   @FXML
@@ -789,6 +868,17 @@ public class UtilisateurControleur {
 	private void miseAJourListeEvaluations(Film film) {
 	    listeEvaluations.getItems().clear();
 	    Set<Evaluation> evaluations = gestionnaire.ensembleEvaluationsFilm(film);
+	    if (film == null) {
+	        entreeEvaluationMoyenne.clear();
+	        return;
+	    }
+
+	    double moyenne = film.calculmoyenneEval();
+	    if (moyenne >= 0) {
+	        entreeEvaluationMoyenne.setText(String.format("%.2f", moyenne)); // Affiche la moyenne avec deux décimales
+	    } else {
+	        entreeEvaluationMoyenne.clear(); // Vide le champ si aucune évaluation
+	    }
 
 	    if (evaluations != null && !evaluations.isEmpty()) {
 	        for (Evaluation evaluation : evaluations) {
