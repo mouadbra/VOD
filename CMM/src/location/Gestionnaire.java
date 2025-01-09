@@ -22,8 +22,7 @@ public class Gestionnaire implements InterUtilisateur, Serializable {
    */
   
   public Gestionnaire(GestionUtilisateur gestionUtilisateur, GestionFilm gestionFilm) {
-    //this.gestionUtilisateur = gestionUtilisateur;
-	this.gestionUtilisateur = GestionUtilisateur.getInstance();
+    this.gestionUtilisateur = GestionUtilisateur.getInstance();
     this.gestionFilm = gestionFilm;
   }
     

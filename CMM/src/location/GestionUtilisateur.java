@@ -9,8 +9,8 @@ import java.util.Set;
    * Gère les utilisateurs et leurs connexions au système.
    */
 public class GestionUtilisateur implements Serializable {
-    private static final long serialVersionUID = 1L;
-    private static GestionUtilisateur instance;
+  private static final long serialVersionUID = 1L;
+  private static GestionUtilisateur instance;
   private Utilisateur utilisateurConnecte;
   private final  Set<Utilisateur> utilisateurs;
 
@@ -22,11 +22,19 @@ public class GestionUtilisateur implements Serializable {
     this.utilisateurs = new HashSet<>();
     this.utilisateurConnecte = null;
   }
+  
+  /**
+   * Retourne une instance unique de la classe {@code GestionUtilisateur}.
+   * Cette méthode garantit que l'instance est créée une seule fois (singleton).
+   * Elle est thread-safe grâce au mot-clé {@code synchronized}.
+   *
+   * @return L'instance unique de {@code GestionUtilisateur}.
+   */
   public static synchronized GestionUtilisateur getInstance() {
-      if (instance == null) {
-          instance = new GestionUtilisateur();
-      }
-      return instance;
+    if (instance == null) {
+      instance = new GestionUtilisateur();
+    }
+    return instance;
   }
   /**
      * Ajoute un nouvel utilisateur au système.
@@ -34,26 +42,25 @@ public class GestionUtilisateur implements Serializable {
      * @param utilisateur L'utilisateur à ajouter.
      * @return true si l'utilisateur est ajouté avec succès, false sinon.
      */
-  public boolean ajouteUtilisateur(Utilisateur utilisateur) {
-	    System.out.println("Début ajouteUtilisateur - Taille actuelle : " + utilisateurs.size());
-	    
-	    if (utilisateurs == null) {
-	        System.out.println("Collection utilisateurs non initialisée !");
-	        return false;
-	    }
-	    if (utilisateur == null) {
-	        System.out.println("Tentative d'ajout d'un utilisateur null !");
-	        return false;
-	    }
-	    if (estPseudoExistant(utilisateur.getPseudo())) {
-	        System.out.println("Pseudo déjà existant : " + utilisateur.getPseudo());
-	        return false;
-	    }
-	    boolean ajoutReussi = utilisateurs.add(utilisateur);
-	    System.out.println("Après ajout - Taille : " + utilisateurs.size());
-	    System.out.println("Ajout utilisateur réussi : " + ajoutReussi);
-	    return ajoutReussi;
-	}
+  
+  public boolean ajouteUtilisateur(Utilisateur utilisateur) { 
+    if (utilisateurs == null) {
+      System.out.println("Collection utilisateurs non initialisée !");
+      return false;
+    }
+    if (utilisateur == null) {
+      System.out.println("Tentative d'ajout d'un utilisateur null !");
+      return false;
+    }
+    if (estPseudoExistant(utilisateur.getPseudo())) {
+      System.out.println("Pseudo déjà existant : " + utilisateur.getPseudo());
+      return false;
+    }
+    boolean ajoutReussi = utilisateurs.add(utilisateur);
+    System.out.println("Après ajout - Taille : " + utilisateurs.size());
+    System.out.println("Ajout utilisateur réussi : " + ajoutReussi);
+    return ajoutReussi;
+  }
   /**
      * Supprime un utilisateur par son pseudo.
      *
@@ -164,14 +171,21 @@ public class GestionUtilisateur implements Serializable {
      * @return Un ensemble des utilisateurs enregistrés.
      */
   public Set<Utilisateur> getUtilisateurs() {
-	  return this.utilisateurs;
+    return this.utilisateurs;
   }
   
-  
+  /**
+   * Remplace l'ensemble des utilisateurs gérés par cette instance.
+   * Si l'ensemble fourni est non nul, il est utilisé pour remplacer 
+   * les utilisateurs existants. Sinon, la liste est vidée.
+   *
+   * @param utilisateurs Un ensemble d'objets {@code Utilisateur} à gérer, 
+   *                     ou {@code null} pour vider l'ensemble actuel.
+   */
   public void setUtilisateurs(Set<Utilisateur> utilisateurs) {
-      this.utilisateurs.clear();  // Au lieu de réassigner, on vide et on ajoute
-      if (utilisateurs != null) {
-          this.utilisateurs.addAll(utilisateurs);
-      }
+    this.utilisateurs.clear();
+    if (utilisateurs != null) {
+      this.utilisateurs.addAll(utilisateurs);
+    }
   }
 }
