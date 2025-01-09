@@ -370,6 +370,11 @@ public class UtilisateurControleur {
       afficherMessageErreur("Film introuvable !");
       return;
     }
+    
+    
+    if (gestionnaireUtilisateur.getUtilisateurConnecte() == null) {
+      afficherMessageErreur("Vous devez être connecté pour affiche l'évaluation !");
+    }
 
     Utilisateur utilisateur = gestionnaireUtilisateur.getUtilisateurConnecte();
     Evaluation evaluation = utilisateur.getEvaluationParFilm(film);
@@ -570,6 +575,12 @@ public class UtilisateurControleur {
     if (commentaire.isEmpty()) {
       commentaire = null; // Traiter les commentaires vides comme null
     }
+    
+    
+    if (gestionnaireUtilisateur.getUtilisateurConnecte() == null) {
+      afficherMessageErreur("Vous devez être connecté pour évaluer un film !");
+    }
+
 
 
     try {
@@ -723,7 +734,11 @@ public class UtilisateurControleur {
     if (commentaire.isEmpty()) {
       commentaire = null; // Traiter les commentaires vides comme null
     }      
-
+       
+    if (gestionnaireUtilisateur.getUtilisateurConnecte() == null) {
+      afficherMessageErreur("Vous devez être connecté pour modifier une évaluation !");
+      return;
+    }
     try {
       Evaluation nouvelleEvaluation = new Evaluation(note, commentaire,
           gestionnaireUtilisateur.getUtilisateurConnecte(), film);
@@ -797,6 +812,22 @@ public class UtilisateurControleur {
         afficherMessageErreur("Film introuvable !");
         return;
       }
+      
+      // Mise à jour des champs avec les détails du film
+      entreeTitreFilm.setText(film.getTitre());
+      entreeAnneeFilm.setText(String.valueOf(film.getAnnee()));
+      entreeAgeLimiteFilm.setText(String.valueOf(film.getAgeLimite()));
+      entreeNomPrenomRealisateurFilm.setText(film.getRealisateur().getPrenom() + " " 
+           + film.getRealisateur().getNom());
+
+      // Concaténer les genres pour afficher dans un champ
+      String genres = String.join(", ", film.getGenres().stream()
+                                                 .map(Genre::name)
+                                                 .toList());
+      entreeGenresFilm.setText(genres);
+      checkFilmLouable.setSelected(film.isEstOuvertalocation());
+      miseAjourListeEvaluations(film);
+
 
       // Récupérer l'affiche
       String cheminAffiche = film.getAffiche();
@@ -913,7 +944,7 @@ public class UtilisateurControleur {
         listeEvaluations.getItems().add(item);
       }
     } else {
-      afficherMessageErreur("Aucune évaluation pour ce film.");
+//      afficherMessageErreur("Aucune évaluation pour ce film.");
     }
   }
 
