@@ -81,7 +81,9 @@ public class AdministrationControleur {
 
   static GestionFilm gestionFilm;
   
-  static GestionUtilisateur gestionUtilisateur;
+  //static GestionUtilisateur gestionUtilisateur;
+//Au lieu de créer une nouvelle instance
+
   
   static Gestionnaire gestionnaire;
   
@@ -91,10 +93,12 @@ public class AdministrationControleur {
     void initialize() {
  
     gestionFilm = new GestionFilm();
-    gestionUtilisateur = new GestionUtilisateur();
-    gestionnaireio = new Gestionio(gestionUtilisateur, gestionFilm);
-
+    //gestionUtilisateur = new GestionUtilisateur();
+    GestionUtilisateur gestionUtilisateur = GestionUtilisateur.getInstance();
     gestionnaire = new Gestionnaire(gestionUtilisateur, gestionFilm);
+    gestionnaireio = new Gestionio(gestionUtilisateur, gestionFilm, gestionnaire);
+    //gestionnaire = new Gestionnaire(GestionUtilisateur.getInstance(), gestionFilm);
+    
     
     
     // Initialisation des limites d'âge pour la liste déroulante

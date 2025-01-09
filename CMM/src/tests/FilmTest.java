@@ -4,6 +4,7 @@ import location.Artiste;
 import location.Evaluation;
 import location.Film;
 import location.Genre;
+import location.InformationPersonnelle;
 import location.Utilisateur;
 
 import static org.junit.Assert.assertEquals;
@@ -232,7 +233,8 @@ public class FilmTest {
   void testCalculMoyenneEval() {
     // Test avec liste vide
     Assertions.assertEquals(0, film.calculmoyenneEval());
-      
+    InformationPersonnelle info = new InformationPersonnelle("Nom", "Prenom");
+    this.utilis = new Utilisateur("nom", "prenom", info);  
     // Ajout d'évaluations
     film.getEvaluations().add(new Evaluation(4, "Très bon film", this.utilis, this.film));
     film.getEvaluations().add(new Evaluation(5, "Excellent", this.utilis, this.film));

@@ -847,10 +847,12 @@ public class UtilisateurControleur {
   
   @FXML
   void initialize() {
-    gestionnaireFilm = AdministrationControleur.gestionFilm;
-    gestionnaireUtilisateur = new GestionUtilisateur();
-    gestionnaire = new Gestionnaire(gestionnaireUtilisateur, gestionnaireFilm);
-    listeNoteEvaluation.getItems().addAll(0, 1, 2, 3, 4, 5);
+	  gestionnaireFilm = AdministrationControleur.gestionFilm;
+	  //gestionnaireUtilisateur = new GestionUtilisateur();
+	  gestionnaireUtilisateur = GestionUtilisateur.getInstance();
+	  gestionnaire = new Gestionnaire(gestionnaireUtilisateur, gestionnaireFilm);
+	  listeNoteEvaluation.getItems().addAll(0, 1, 2, 3, 4, 5);
+
 
 
   }

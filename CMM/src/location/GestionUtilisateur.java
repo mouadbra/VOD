@@ -10,18 +10,24 @@ import java.util.Set;
    */
 public class GestionUtilisateur implements Serializable {
     private static final long serialVersionUID = 1L;
+    private static GestionUtilisateur instance;
   private Utilisateur utilisateurConnecte;
-  private  Set<Utilisateur> utilisateurs;
+  private final  Set<Utilisateur> utilisateurs;
 
   /**
      * Constructeur par défaut.
      * Initialise l'ensemble des utilisateurs et marque aucun utilisateur comme connecté.
      */
-  public GestionUtilisateur() {
+  private GestionUtilisateur() {
     this.utilisateurs = new HashSet<>();
     this.utilisateurConnecte = null;
   }
-
+  public static synchronized GestionUtilisateur getInstance() {
+      if (instance == null) {
+          instance = new GestionUtilisateur();
+      }
+      return instance;
+  }
   /**
      * Ajoute un nouvel utilisateur au système.
      *
@@ -29,11 +35,25 @@ public class GestionUtilisateur implements Serializable {
      * @return true si l'utilisateur est ajouté avec succès, false sinon.
      */
   public boolean ajouteUtilisateur(Utilisateur utilisateur) {
-    if (utilisateur == null || estPseudoExistant(utilisateur.getPseudo())) {
-      return false;
-    }
-    return utilisateurs.add(utilisateur);
-  }
+	    System.out.println("Début ajouteUtilisateur - Taille actuelle : " + utilisateurs.size());
+	    
+	    if (utilisateurs == null) {
+	        System.out.println("Collection utilisateurs non initialisée !");
+	        return false;
+	    }
+	    if (utilisateur == null) {
+	        System.out.println("Tentative d'ajout d'un utilisateur null !");
+	        return false;
+	    }
+	    if (estPseudoExistant(utilisateur.getPseudo())) {
+	        System.out.println("Pseudo déjà existant : " + utilisateur.getPseudo());
+	        return false;
+	    }
+	    boolean ajoutReussi = utilisateurs.add(utilisateur);
+	    System.out.println("Après ajout - Taille : " + utilisateurs.size());
+	    System.out.println("Ajout utilisateur réussi : " + ajoutReussi);
+	    return ajoutReussi;
+	}
   /**
      * Supprime un utilisateur par son pseudo.
      *
@@ -144,13 +164,14 @@ public class GestionUtilisateur implements Serializable {
      * @return Un ensemble des utilisateurs enregistrés.
      */
   public Set<Utilisateur> getUtilisateurs() {
-    return new HashSet<>(utilisateurs);
+	  return this.utilisateurs;
   }
   
   
   public void setUtilisateurs(Set<Utilisateur> utilisateurs) {
-	    this.utilisateurs = new HashSet<>(utilisateurs);
-	    // Réinitialiser l'utilisateur connecté à null
-	    this.utilisateurConnecte = null;
-	}
+      this.utilisateurs.clear();  // Au lieu de réassigner, on vide et on ajoute
+      if (utilisateurs != null) {
+          this.utilisateurs.addAll(utilisateurs);
+      }
+  }
 }
