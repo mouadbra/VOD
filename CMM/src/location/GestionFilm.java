@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
+
 
 /**
  * Classe pour gérer les films et les artistes dans le système,
  * implémentant les services d'administration définis par l'interface InterAdministration.
  */
-public class GestionFilm implements InterAdministration , Serializable {
-    private static final long serialVersionUID = 1L;
+public class GestionFilm implements InterAdministration, Serializable {
+  private static final long serialVersionUID = 1L;
   // Ensemble des films disponibles pour la location
   private Set<Film> filmsLouable;
 
@@ -435,20 +435,38 @@ public Set<Artiste> ensembleActeurs() {
   }
 
   
-  
+  /**
+   * Définit les films gérés par cette instance et initialise un ensemble de films louables.
+   *
+   * @param films un ensemble de films à gérer.
+   * 
+   */
   public void setFilms(Set<Film> films) {
-	    this.films = new HashSet<>(films);
-	    // Créer un nouveau Set pour les films louables
-	    this.filmsLouable = new HashSet<>();
-	}
+    this.films = new HashSet<>(films);
+    // Créer un nouveau Set pour les films louables
+    this.filmsLouable = new HashSet<>();
+  }
   
   
+  /**
+   * Récupère l'ensemble des artistes associés aux films gérés.
+   *
+   * 
+   * 
+   */
   public Set<Artiste> getArtistes() {
-	    return artistes;
-	}
-	public void setArtistes(Set<Artiste> artistes) {
-	    this.artistes = artistes;
-	}
+    return artistes;
+  }
+  
+  /**
+   * Définit les artistes associés aux films gérés.
+   *
+   * @param artistes un ensemble d'artistes à associer.
+   * 
+   */
+  public void setArtistes(Set<Artiste> artistes) {
+    this.artistes = artistes;
+  }
   
   
 }

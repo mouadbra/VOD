@@ -14,8 +14,7 @@ import java.util.Set;
  * @author Mouad Brahmi
  */
 public class Film implements Serializable {
-	
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
   /**
    * Le titre du film.
@@ -198,7 +197,7 @@ public class Film implements Serializable {
    */
   
   public void modifierLocation(boolean etat) {
-    estOuvertalocation = !etat;
+    estOuvertalocation = etat;
   }
   /**
    * set l'etat de  location.

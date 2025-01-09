@@ -2,7 +2,6 @@ package location;
 
 
 import java.io.Serializable;
-
 import java.util.Objects;
 
 
@@ -16,7 +15,7 @@ import java.util.Objects;
  */
 
 public class Evaluation implements Serializable {
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
   /**
   * La note ajoutée entre 0 et 5.
   */
@@ -168,16 +167,25 @@ public class Evaluation implements Serializable {
   
   
   @Override
-  public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      Evaluation that = (Evaluation) o;
-      return film.equals(that.film) && utilis.equals(that.utilis);
+  public boolean equals(Object o) { 
+    if (this == o) {
+      return true; 
+    }
+    
+    
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    
+    
+    Evaluation that = (Evaluation) o;
+    return film.equals(that.film) && utilis.equals(that.utilis);
+      
   }
 
   @Override
   public int hashCode() {
-      return Objects.hash(film, utilis);
+    return Objects.hash(film, utilis);
   }
 
   

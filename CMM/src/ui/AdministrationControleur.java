@@ -1,16 +1,21 @@
 package ui;
 
+import io.Gestionio;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import io.Gestionio;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import location.Artiste;
@@ -84,10 +89,10 @@ public class AdministrationControleur {
 
   @FXML
     void initialize() {
-	  
+ 
     gestionFilm = new GestionFilm();
-	gestionUtilisateur = new GestionUtilisateur();
-	gestionnaireio = new Gestionio(gestionUtilisateur, gestionFilm);
+    gestionUtilisateur = new GestionUtilisateur();
+    gestionnaireio = new Gestionio(gestionUtilisateur, gestionFilm);
 
     gestionnaire = new Gestionnaire(gestionUtilisateur, gestionFilm);
     
@@ -138,7 +143,17 @@ public class AdministrationControleur {
       afficherAlerte("Erreur", "Tous les champs de l'artiste doivent être remplis.");
       return;
     }
+    if (!nom.matches("[a-zA-ZÀ-ÿ\\-\\s']+")
+        || 
+            !prenom.matches("[a-zA-ZÀ-ÿ\\-\\s']+")
+        || 
+            !nationalite.matches("[a-zA-ZÀ-ÿ\\-\\s']+")) {
+      afficherAlerte("Erreur", "Les champs ne doivent"
+            + " contenir que des lettres, tirets, apostrophes et espaces.");
+      return;
+    }
 
+    
     Artiste nouvelArtiste = gestionFilm.creerArtiste(nom, prenom, nationalite);
     if (nouvelArtiste != null) {
       listeArtistes.getItems().add(nom + " " + prenom);
@@ -173,7 +188,7 @@ public class AdministrationControleur {
       return;
     }
 
-    // Sépare le nom et le prénom
+     
     String[] nomPrenom = artisteSelectionne.split(" ");
     if (nomPrenom.length < 2) {
       afficherMessageErreur("Format invalide pour le réalisateur sélectionné."
@@ -185,7 +200,7 @@ public class AdministrationControleur {
     String nom = nomPrenom[0];
     String prenom = nomPrenom[1];
 
-    // Récupération des informations saisies
+    
     String titre = entreeTitreFilm.getText();
     String anneeString = entreeAnneeFilm.getText();
     String ageLimiteString = listeChoixAgeLimite.getValue();
@@ -245,13 +260,40 @@ public class AdministrationControleur {
 
   @FXML
   void actionBoutonParcourirAffiche(ActionEvent event) {
+    Film filmSelectionne = null;
+    String titreFilmSelectionne = listeFilms.getSelectionModel().getSelectedItem();
+      
+    if (titreFilmSelectionne == null) {
+      afficherAlerte("Erreur", "Veuillez sélectionner un film avant d'ajouter une affiche.");
+      return;
+    }
+      
+    
+    for (Film film : gestionFilm.ensembleFilms()) {
+      if (film.getTitre().equals(titreFilmSelectionne)) {
+        filmSelectionne = film;
+        break;
+      }
+    }
+
     FileChooser fileChooser = new FileChooser();
     fileChooser.setTitle("Choisir une affiche");
+      
+    FileChooser.ExtensionFilter imageFilter = new FileChooser.ExtensionFilter(
+          "Images", "*.jpg", "*.jpeg", "*.png", "*.gif");
+    fileChooser.getExtensionFilters().add(imageFilter);
+      
     File file = fileChooser.showOpenDialog(null);
-
     if (file != null) {
-      entreeAffiche.setText(file.getAbsolutePath());
+      try {
+        if (gestionFilm.ajouterAffiche(filmSelectionne, file.getAbsolutePath())) {
+          entreeAffiche.setText(file.getAbsolutePath());
+        }
+      } catch (IOException e) {
+        afficherAlerte("Erreur", "Impossible d'ajouter l'affiche.");
+      }
     }
+    
   }
 
   private void afficherAlerte(String titre, String message) {
@@ -278,7 +320,7 @@ public class AdministrationControleur {
       return;
     }
 
-    // Mettre à jour les champs d'information sur le film
+    
     entreeTitreFilm.setText(film.getTitre());
     entreeAnneeFilm.setText(String.valueOf(film.getAnnee()));
     listeChoixAgeLimite.setValue(String.valueOf(film.getAgeLimite()));
@@ -304,7 +346,7 @@ public class AdministrationControleur {
       return;
     }
 
-    // Extraire le nom et le prénom de l'artiste sélectionné
+    
     String[] nomPrenom = selectionArtiste.split(" ");
     if (nomPrenom.length < 2) {
       afficherMessageErreur("Format invalide pour l'artiste sélectionné.");
@@ -320,7 +362,7 @@ public class AdministrationControleur {
       return;
     }
 
-    // Mettre à jour le champ réalisateur
+    
     entreeNomPrenomRealisateur.setText(realisateur.getNom() + " " + realisateur.getPrenom());
     afficherMessageSucces("Le réalisateur a été choisi avec succès.");
   }
@@ -330,7 +372,7 @@ public class AdministrationControleur {
     
   @FXML
   void actionBoutonNouveauArtiste(ActionEvent event) {
-    // Effacer le contenu des champs liés à l'artiste
+    
     entreeNomArtiste.clear();
     entreePrenomArtiste.clear();
     entreeNationaliteArtiste.clear();
@@ -342,7 +384,7 @@ public class AdministrationControleur {
     
   @FXML
   void actionBoutonNouveauFilm(ActionEvent event) {
-    // Effacer le contenu des champs liés au film
+    
     entreeTitreFilm.clear();
     entreeAnneeFilm.clear();
     listeChoixAgeLimite.getSelectionModel().clearSelection();
@@ -379,10 +421,10 @@ public class AdministrationControleur {
     String selectionArtiste = listeArtistes.getSelectionModel().getSelectedItem();
 
     if (selectionArtiste == null || selectionArtiste.isEmpty()) {
-      return; // Rien n'est sélectionné
+      return; 
     }
 
-    // Extraire le nom et le prénom de l'artiste sélectionné
+    
     String[] nomPrenom = selectionArtiste.split(" ");
     if (nomPrenom.length < 2) {
       afficherMessageErreur("Format invalide pour l'artiste sélectionné.");
@@ -408,7 +450,7 @@ public class AdministrationControleur {
     String selectionFilm = listeFilms.getSelectionModel().getSelectedItem();
 
     if (selectionFilm == null || selectionFilm.isEmpty()) {
-      return; // Rien n'est sélectionné
+      return;
     }
 
     Film film = gestionFilm.getFilm(selectionFilm);
@@ -425,6 +467,22 @@ public class AdministrationControleur {
       }
 
       checkBoxLocationFilm.setSelected(film.isEstOuvertalocation());
+      checkBoxLocationFilm.setSelected(film.isEstOuvertalocation());
+      checkBoxLocationFilm.setOnAction(e -> {
+        boolean nouvelEtat = checkBoxLocationFilm.isSelected();
+        film.modifierLocation(nouvelEtat);
+          
+        
+        mettreaJourlistefilms();
+      });
+      
+      String pathAffiche = film.getAffiche();
+      if (pathAffiche != null && !pathAffiche.isEmpty()) {
+        entreeAffiche.setText(pathAffiche);
+          
+      } else {
+        entreeAffiche.setText(""); 
+      }
     } else {
       afficherMessageErreur("Film introuvable dans le système.");
     }
@@ -439,7 +497,7 @@ public class AdministrationControleur {
       return;
     }
 
-    // Extraire le nom et le prénom de l'acteur sélectionné
+    
     String[] nomPrenom = selectionActeur.split(" ");
     if (nomPrenom.length < 2) {
       afficherMessageErreur("Format invalide pour l'acteur sélectionné.");
@@ -455,7 +513,7 @@ public class AdministrationControleur {
       return;
     }
 
-    // Afficher les films de cet acteur
+     
     Set<Film> filmsActeur = gestionFilm.ensembleFilmsActeur(acteur);
     listeFilms.getItems().clear();
 
@@ -480,7 +538,7 @@ public class AdministrationControleur {
       return;
     }
 
-    // Extraire le nom et le prénom de l'artiste sélectionné
+    
     String[] nomPrenom = selectionArtiste.split(" ");
     if (nomPrenom.length < 2) {
       afficherMessageErreur("Format invalide pour le réalisateur sélectionné.");
@@ -577,7 +635,7 @@ public class AdministrationControleur {
       return;
     }
 
-    // Extraire le nom et le prénom de l'artiste sélectionné
+    
     String[] nomPrenom = selectionArtiste.split(" ");
     if (nomPrenom.length < 2) {
       afficherMessageErreur("Format invalide pour l'artiste sélectionné.");
@@ -677,8 +735,7 @@ public class AdministrationControleur {
   @FXML
   void actionBoutonAfficherArtistesRealisateurs(ActionEvent event) {
     listeArtistes.getItems().clear();
-    Set<Artiste> realisateurs = gestionFilm.ensembleRealisateurs(); // Récupération des réalisateurs
-
+    Set<Artiste> realisateurs = gestionFilm.ensembleRealisateurs(); 
     for (Artiste realisateur : realisateurs) {
       listeArtistes.getItems().add(realisateur.getNom() + " " + realisateur.getPrenom());
     }
@@ -690,8 +747,7 @@ public class AdministrationControleur {
   @FXML
   void actionBoutonAfficherArtistesActeurs(ActionEvent event) {
     listeArtistes.getItems().clear();
-    Set<Artiste> acteurs = gestionFilm.ensembleActeurs(); // Récupération des acteurs
-
+    Set<Artiste> acteurs = gestionFilm.ensembleActeurs(); 
     for (Artiste acteur : acteurs) {
       listeArtistes.getItems().add(acteur.getNom() + " " + acteur.getPrenom());
     }
@@ -735,66 +791,66 @@ public class AdministrationControleur {
 
   @FXML
   void actionMenuCharger(ActionEvent event) {
-      FileChooser fileChooser = new FileChooser();
-      fileChooser.setTitle("Charger les données");
-      fileChooser.getExtensionFilters().add(
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Charger les données");
+    fileChooser.getExtensionFilters().add(
           new FileChooser.ExtensionFilter("Fichier de données", "*.dat")
-      );
+    );
       
-      File fichier = fileChooser.showOpenDialog(null);
-      if (fichier != null) {
-          try {
-              // Utilisation de l'interface InterSauvegarde implémentée par votre gestionnaire
-              gestionnaireio.chargerDonnees(fichier.getAbsolutePath());
+    File fichier = fileChooser.showOpenDialog(null);
+    if (fichier != null) {
+      try {
+        
+        gestionnaireio.chargerDonnees(fichier.getAbsolutePath());
               
-              // Mise à jour des listes dans l'interface
-              mettreaJourlistefilms();
-              mettreAjourListeartistes();
+        
+        mettreaJourlistefilms();
+        mettreAjourListeartistes();
               
-              Alert alert = new Alert(Alert.AlertType.INFORMATION);
-              alert.setTitle("Chargement");
-              alert.setHeaderText(null);
-              alert.setContentText("Les données ont été chargées avec succès !");
-              alert.showAndWait();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Chargement");
+        alert.setHeaderText(null);
+        alert.setContentText("Les données ont été chargées avec succès !");
+        alert.showAndWait();
               
-          } catch (IOException e) {
-              Alert alert = new Alert(Alert.AlertType.ERROR);
-              alert.setTitle("Erreur de chargement");
-              alert.setHeaderText(null);
-              alert.setContentText("Une erreur est survenue lors du chargement : " + e.getMessage());
-              alert.showAndWait();
-          }
+      } catch (IOException e) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erreur de chargement");
+        alert.setHeaderText(null);
+        alert.setContentText("Une erreur est survenue lors du chargement : " + e.getMessage());
+        alert.showAndWait();
       }
+    }
   }
     
   @FXML
   void actionMenuSauvegarder(ActionEvent event) {
-      FileChooser fileChooser = new FileChooser();
-      fileChooser.setTitle("Sauvegarder les données");
-      fileChooser.getExtensionFilters().add(
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Sauvegarder les données");
+    fileChooser.getExtensionFilters().add(
           new FileChooser.ExtensionFilter("Fichier de données", "*.dat")
-      );
+    );
       
-      File fichier = fileChooser.showSaveDialog(null);
-      if (fichier != null) {
-          try {
-              // Utilisation de l'interface InterSauvegarde implémentée par votre gestionnaire
-              gestionnaireio.sauvegarderDonnees(fichier.getAbsolutePath());
+    File fichier = fileChooser.showSaveDialog(null);
+    if (fichier != null) {
+      try {
+        
+        gestionnaireio.sauvegarderDonnees(fichier.getAbsolutePath());
               
-              Alert alert = new Alert(Alert.AlertType.INFORMATION);
-              alert.setTitle("Sauvegarde");
-              alert.setHeaderText(null);
-              alert.setContentText("Les données ont été sauvegardées avec succès !");
-              alert.showAndWait();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Sauvegarde");
+        alert.setHeaderText(null);
+        alert.setContentText("Les données ont été sauvegardées avec succès !");
+        alert.showAndWait();
               
-          } catch (IOException e) {
-              Alert alert = new Alert(Alert.AlertType.ERROR);
-              alert.setTitle("Erreur de sauvegarde");
-              alert.setHeaderText(null);
-              alert.setContentText("Une erreur est survenue lors de la sauvegarde : " + e.getMessage());
-              alert.showAndWait();
-          }
+      } catch (IOException e) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erreur de sauvegarde");
+        alert.setHeaderText(null);
+        alert.setContentText("Une erreur est survenue lors de la sauvegarde : " + e.getMessage());
+        alert.showAndWait();
       }
+    }
   }
     
   @FXML

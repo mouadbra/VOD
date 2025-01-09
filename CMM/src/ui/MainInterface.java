@@ -72,6 +72,9 @@ public final class MainInterface extends Application {
     // Rajouter ici du code si besoin ou avant le lancement des fenêtres
   }
   
+  /**
+  * Lancement.
+    */
   public static void main(String[] args) {
     launch(args);
   }

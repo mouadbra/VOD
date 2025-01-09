@@ -7,17 +7,21 @@ package location;
  * @author Eric Cariou
  */
 public class NonConnecteException extends Exception {
+  /**
+* Constructeur .
+* */
+  public NonConnecteException(String message) {
+    super(message);
+  }
+  
+  /**
+  * Constructeur .
+    */
+  public NonConnecteException() {
+    super();
+  }
 
-	 public NonConnecteException(String message) {
-	        super(message);
-	    }
-
-public NonConnecteException() {
-	super();
-		// TODO Auto-generated constructor stub
-	}
-
-/**
+  /**
    * Identifiant de sérialisation.
    */
   private static final long serialVersionUID = -2876441299971092712L;

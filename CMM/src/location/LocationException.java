@@ -7,13 +7,14 @@ package location;
  * @author Eric Cariou
  */
 public class LocationException extends Exception {
-
+  /**
+* Constructeur .
+  */
   public LocationException(String string) {
-		// TODO Auto-generated constructor stub
-	  super(string);
-	}
+    super(string);
+  }
 
-/**
+  /**
    * Identifiant de sérialisation.
    */
   private static final long serialVersionUID = -3365565475174636290L;
