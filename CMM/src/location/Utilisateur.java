@@ -10,7 +10,7 @@ import java.util.Set;
  * ses évaluations, et son état de connexion.
  */
 public class Utilisateur implements Serializable {
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
   private String pseudo;
   private String motDePasse;
   private InformationPersonnelle info;
