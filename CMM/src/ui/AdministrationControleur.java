@@ -82,7 +82,7 @@ public class AdministrationControleur {
   static GestionFilm gestionFilm;
   
   //static GestionUtilisateur gestionUtilisateur;
-//Au lieu de créer une nouvelle instance
+
 
   
   static Gestionnaire gestionnaire;
