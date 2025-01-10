@@ -1,13 +1,30 @@
 package tests;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import location.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
+import location.Artiste;
+import location.Evaluation;
+import location.Film;
+import location.Genre;
+import location.GestionFilm;
+import location.GestionUtilisateur;
+import location.Gestionnaire;
+import location.InformationPersonnelle;
+import location.LocationException;
+import location.NonConnecteException;
+import location.Utilisateur;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+
+
 
 /**
  * Classe de test pour la classe Gestionnaire.
@@ -193,4 +210,108 @@ public class GestionnaireTeste {
     assertNotNull(films, "L'ensemble des films ne doit pas être null.");
     assertTrue(films.contains(film), "L'ensemble des films doit contenir le film ajouté.");
   }
+  /**
+   * Teste la déconnexion avec un utilisateur connecté.
+   */
+  
+  @Test
+  public void testDeconnexionValide() throws NonConnecteException {
+    gestionUtilisateur.ajouteUtilisateur(utilisateur);
+    gestionnaire.connexion("johndoe", "password");
+    gestionnaire.deconnexion();
+    assertNull(gestionUtilisateur.getUtilisateurConnecte(), "L'utilisateur doit être déconnecté.");
+  }
+  
+  /**
+   * Teste la location de film avec un utilisateur connecté mais film non disponible.
+   */
+  
+  @Test
+  public void testLocationFilmNonDisponible() throws NonConnecteException {
+    gestionUtilisateur.ajouteUtilisateur(utilisateur);
+    gestionnaire.connexion("johndoe", "password");
+
+    film.setLocation(false);  
+    // Simulation que le film n'est pas disponible pour la location
+    assertThrows(LocationException.class, () -> {
+      gestionnaire.louerFilm(film); },
+        "La location doit échouer si le film n'est pas disponible.");
+  }
+  
+  /**
+   * Teste l'ajout d'une évaluation lorsque l'utilisateur n'a pas loué le film.
+   */
+    
+  @Test
+  public void testAjouterEvaluationSansLocation() throws NonConnecteException {
+    gestionUtilisateur.ajouteUtilisateur(utilisateur);
+    gestionnaire.connexion("johndoe", "password");
+    Evaluation eval = new Evaluation(5, "Excellent film!", utilisateur, film);
+    assertThrows(LocationException.class, () -> {
+      gestionnaire.ajouterEvaluation(film, eval);
+    }, "L'utilisateur ne peut pas évaluer un film qu'il n'a pas loué.");
+  }
+  
+  /**
+   * Teste la modification d'une évaluation existante.
+   */
+    
+  @Test
+  public void testModifierEvaluationValide() throws NonConnecteException, LocationException {
+    gestionUtilisateur.ajouteUtilisateur(utilisateur);
+    gestionnaire.connexion("johndoe", "password");
+
+    // Loue le film et ajoute une évaluation
+    gestionnaire.louerFilm(film);
+    Evaluation eval = new Evaluation(5, utilisateur, film);
+    gestionnaire.ajouterEvaluation(film, eval);  
+    // Modifie l'évaluation
+    Evaluation nouvelleEval = new Evaluation(4, utilisateur, film);
+    gestionnaire.modifierEvaluation(film, nouvelleEval);
+
+    assertTrue(film.getEvaluations().contains(nouvelleEval),
+                   "L'évaluation du film doit être modifiée.");
+  }
+
+  /**
+   * Teste la suppression d'une évaluation existante.
+   */
+  @Test
+  public void testSupprimerEvaluation() throws NonConnecteException, LocationException {
+    gestionUtilisateur.ajouteUtilisateur(utilisateur);
+    gestionnaire.connexion("johndoe", "password");
+    // Loue le film et ajoute une évaluation
+    gestionnaire.louerFilm(film);
+    Evaluation eval = new Evaluation(5, utilisateur, film);
+    gestionnaire.ajouterEvaluation(film, eval);
+    // Supprime l'évaluation
+    Evaluation nouvelleEval = new Evaluation(3, utilisateur, film);
+    gestionnaire.modifierEvaluation(film, nouvelleEval); 
+    assertFalse(film.getEvaluations().contains(eval), 
+             "L'évaluation précédente doit être supprimée.");
+  }
+  /**
+   * Teste la récupération de l'ensemble des films par genre.
+   */
+  
+  @Test
+  public void testEnsembleFilmsGenre() {
+    Set<Film> films = gestionnaire.ensembleFilmsGenre(Genre.Action);
+    assertNotNull(films, "L'ensemble des films par genre ne doit pas être nul.");
+  }
+
+  /**
+   * Teste l'évaluation moyenne d'un film.
+   */
+  @Test
+  public void testEvaluationMoyenne() throws LocationException, NonConnecteException {
+    Evaluation eval1 = new Evaluation(4, utilisateur, film);
+    Evaluation eval2 = new Evaluation(3, utilisateur, film); 
+    gestionnaire.ajouterEvaluation(film, eval1);
+    gestionnaire.ajouterEvaluation(film, eval2);
+    double moyenne = gestionnaire.evaluationMoyenne(film);
+    assertEquals(3.5, moyenne, "L'évaluation moyenne doit être correcte.");
+  }
 }
+
+
