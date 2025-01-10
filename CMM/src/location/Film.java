@@ -317,26 +317,24 @@ public class Film implements Serializable {
   public String toString() {
     return "Film{" 
       +
-        "titre='" + titre + '\'' 
+             "titre='" + titre + '\'' 
       +
-        ", realisateur=" + realisateur
+             ", realisateur=" + (realisateur != null ? realisateur.getNom() : "Inconnu") 
       +
-        ", annee=" + annee 
+             ", annee=" + annee 
       +
-        ", ageLimite=" + ageLimite 
+             ", ageLimite=" + ageLimite 
       +
-        ", genres=" + genres 
+             ", genres=" + genres 
       +
-        ", acteurs=" + acteurs 
+             ", acteurs=" 
+      + acteurs.stream().map(Artiste::getNom).toList() 
       +
-        ", estOuvertalocation=" + estOuvertalocation 
+             ", estOuvertalocation=" + estOuvertalocation 
       +
-        ", evaluations=" + evaluations
+             ", affiche='" + (affiche != null ? affiche : "Pas d'affiche") + '\'' 
       +
-        
-      ", affiche='" + (affiche != null ? affiche : "Pas d'affiche") + '\'' 
-      
-      +
-        '}';
+             '}';
   }
+
 }

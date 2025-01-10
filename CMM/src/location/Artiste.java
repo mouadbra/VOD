@@ -149,10 +149,17 @@ public class Artiste implements Serializable {
   @Override
   public String toString() {
     return "Artiste{" 
-            + "nom='" + nom + '\'' 
-            + ", prenom='" + prenom + '\'' 
-            + ", nationalite='" + nationalite + '\'' 
-            + ", filmographie=" + filmographie 
-           +  '}';
+      +
+             "nom='" + nom + '\'' 
+      +
+             ", prenom='" + prenom + '\'' 
+      +
+             ", nationalite='" + nationalite + '\'' 
+      +
+             ", filmographie=" + filmographie 
+      +
+             '}';
   }
+
+
 }

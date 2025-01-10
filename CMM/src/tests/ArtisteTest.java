@@ -1,6 +1,9 @@
 package tests;
 
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -118,7 +121,8 @@ public class ArtisteTest {
   void testToString() {
     artiste.ajouterFilm(film1);
     artiste.ajouterFilm(film2);
-    String attendu = "Artiste{nom='Doe', prenom='John', nationalite='Américaine', filmographie=[" 
+    String attendu = "Artiste{nom='Reeves', prenom='Keanu',"
+        + " nationalite='Américaine', filmographie=[" 
                          + film1.toString() + ", " + film2.toString() + "]}";
     assertEquals(attendu, artiste.toString(),
         "La méthode toString devrait produire la chaîne attendue.");

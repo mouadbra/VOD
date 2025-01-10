@@ -23,6 +23,8 @@ public class GestionUtilisateur implements Serializable {
     this.utilisateurConnecte = null;
   }
   
+
+  
   /**
    * Retourne une instance unique de la classe {@code GestionUtilisateur}.
    * Cette méthode garantit que l'instance est créée une seule fois (singleton).

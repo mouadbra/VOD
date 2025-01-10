@@ -1,18 +1,20 @@
 package tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
+
+import java.util.HashSet;
+import java.util.Set;
 import location.Artiste;
 import location.Evaluation;
 import location.Film;
 import location.Genre;
 import location.InformationPersonnelle;
 import location.Utilisateur;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-
-import java.util.*;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -101,7 +103,7 @@ public class FilmTest {
     Assertions.assertTrue(representation.contains("Inception"));
     Assertions.assertTrue(representation.contains("2010"));
     Assertions.assertTrue(representation.contains("12"));
-    Assertions.assertTrue(representation.contains(realisateur.toString()));
+    Assertions.assertTrue(representation.contains(realisateur.getNom()));
   }
 
   /**
@@ -222,7 +224,7 @@ public class FilmTest {
   @Test
   void testGetAfficheDefaultValue() {
     // Création d'un film sans définir l'affiche
-    Film film = new Film("Inception", new Artiste("chris","nolan", "americain"),
+    Film film = new Film("Inception", new Artiste("chris", "nolan", "americain"),
         2010, 13, Set.of(Genre.Action));
       
     // Vérification que l'affiche est initialement null

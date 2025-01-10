@@ -28,7 +28,8 @@ public class GestionUtilisateurTest {
      */
   @BeforeEach
     public void setUp() {
-	this.gestionUtilisateur = GestionUtilisateur.getInstance();
+    this.gestionUtilisateur = GestionUtilisateur.getInstance();
+    this.gestionUtilisateur.getUtilisateurs().clear();
     InformationPersonnelle info = new InformationPersonnelle("John", "Doe", "123 Main St", 25);
     utilisateur = new Utilisateur("johndoe", "password123", info);
   }

@@ -1,6 +1,13 @@
 package tests;
 
-import java.util.HashSet;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Set;
 import location.Artiste;
 import location.Film;
@@ -8,7 +15,7 @@ import location.Genre;
 import location.GestionFilm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
 
 /**
  * Tests unitaires pour la classe GestionFilm.
