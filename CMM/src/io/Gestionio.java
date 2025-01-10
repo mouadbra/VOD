@@ -28,12 +28,31 @@ import location.Utilisateur;
  * 
  */
 public class Gestionio implements InterSauvegarde, Serializable {
+
+  /**
+  * serialVersionUID.
+  */
+
   private static final long serialVersionUID = 1L;
+  /**
+  * posters/ :dossier de sauvegarde d'affiche.
+  */
+  
   private static final String POSTERS_DIRECTORY = "posters/";
     
-  //private GestionUtilisateur gestionUtilisateur;
+  /**
+  * attribut gestionUtilisateur.
+  */
+  
   GestionUtilisateur gestionUtilisateur = GestionUtilisateur.getInstance();
+  /**
+  * attribut gestionFilm.
+  */
   private GestionFilm gestionFilm;
+  /**
+  * attribut gestion.
+  */
+  
   private Gestionnaire gestion;
   
   /**

@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
  * @author Eric Cariou
  * @see location.InformationPersonnelle
  */
-class TestInformationPersonnelle {
+public class TestInformationPersonnelle {
   
   /**
    * Une information basique : prénom et nom.

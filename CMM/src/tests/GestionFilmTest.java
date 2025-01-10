@@ -16,17 +16,30 @@ import location.GestionFilm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
 /**
- * Tests unitaires pour la classe GestionFilm.
+ * La classe gestion film pour le test.
  */
 public class GestionFilmTest {
-
+  /**
+  * La gestion film pour les tests.
+  */
   private GestionFilm gestionFilm;
+  /**
+   * Le réalisateur du film pour les tests.
+   */
   private Artiste realisateur;
+  /**
+   * Le film 1.
+   */
   private Film film1;
+  /**
+   * Le film 2.
+   */
   private Film film2;
-
+  /**
+   * Initialisation des attributs avant chaque test.
+   */
+  
   @BeforeEach
   void setUp() {
     // Initialisation du gestionnaire de films
@@ -42,7 +55,10 @@ public class GestionFilmTest {
     // Ajout d'un film à la collection des films louables
     gestionFilm.ouvrirLocation(film1);
   }
-
+  
+  /**
+   * Test de creation d'artistes.
+   */
   @Test
   void testCreerArtiste() {
     Artiste artiste = gestionFilm.creerArtiste("Nolan", "Christopher", "Anglais");
@@ -51,6 +67,9 @@ public class GestionFilmTest {
     assertEquals("Christopher", artiste.getPrenom());
     assertEquals("Anglais", artiste.getNationalite());
   }
+  /**
+   * Test de creation d'artistes non valide.
+   */
 
   @Test
   void testCreerArtisteInvalide() {
@@ -58,12 +77,18 @@ public class GestionFilmTest {
     assertNull(gestionFilm.creerArtiste("", "Christopher", "Anglais"));
     assertNull(gestionFilm.creerArtiste("Nolan", "Christopher", null));
   }
-
+  /**
+   * Test de creation d'artiste duplique.
+   */
+  
   @Test
   void testCreerArtisteDuplique() {
     gestionFilm.creerArtiste("Nolan", "Christopher", "Anglais");
     assertNull(gestionFilm.creerArtiste("Nolan", "Christopher", "Américain"));
   }
+  /**
+   * Test de suppression d'artistes.
+   */
 
   @Test
   void testSupprimerArtiste() {
@@ -73,15 +98,27 @@ public class GestionFilmTest {
     assertFalse(gestionFilm.supprimerArtiste(artiste)); // Déjà supprimé
   }
 
+  /**
+   * Test de suppression d'artistes null.
+   */
+  
   @Test
   void testSupprimerArtisteNull() {
     assertFalse(gestionFilm.supprimerArtiste(null));
   }
+  
+  /**
+   * Test de suppression d'artiste avec film.
+   */
 
   @Test
   void testSupprimerArtisteAvecFilm() {
     assertFalse(gestionFilm.supprimerArtiste(realisateur));
   }
+  
+  /**
+   * Test de creation d'un film.
+   */
 
   @Test
   void testCreerFilm() {
@@ -92,7 +129,10 @@ public class GestionFilmTest {
     assertEquals(2014, nouveauFilm.getAnnee());
     assertEquals(10, nouveauFilm.getAgeLimite());
   }
-
+  /**
+   * Test de creation d'un film non valide.
+   */
+  
   @Test
   void testCreerFilmInvalide() {
     assertNull(gestionFilm.creerFilm(null, realisateur, 2014, 10));
@@ -102,10 +142,16 @@ public class GestionFilmTest {
     assertNull(gestionFilm.creerFilm("Test", realisateur, 2014, -1));
   }
 
+  /**
+   * Test de creation de film duplique.
+   */
   @Test
   void testCreerFilmDuplique() {
     assertNull(gestionFilm.creerFilm("Jurassic Park", realisateur, 2000, 12));
   }
+  /**
+   * Test d'ajout  d'acteurs.
+   */
 
   @Test
   void testAjouterActeurs() {
@@ -117,12 +163,19 @@ public class GestionFilmTest {
     assertTrue(film1.getActeurs().contains(acteur2));
   }
 
+  /**
+   * Test d'ajout d'acteur non valide.
+   */
+  
   @Test
   void testAjouterActeursInvalides() {
     assertFalse(gestionFilm.ajouterActeurs(null, realisateur));
     assertFalse(gestionFilm.ajouterActeurs(film1, (Artiste[]) null));
   }
-
+  /**
+   * Test d'ajout de genres.
+   */
+  
   @Test
   void testAjouterGenres() {
     assertTrue(gestionFilm.ajouterGenres(film1, Genre.Action, Genre.Aventure));
@@ -130,34 +183,52 @@ public class GestionFilmTest {
     assertTrue(film1.getGenres().contains(Genre.Aventure));
   }
 
+  /**
+   * Test d'ajout de genres invalides.
+   */
   @Test
   void testAjouterGenresInvalides() {
     assertFalse(gestionFilm.ajouterGenres(null, Genre.Action));
     assertFalse(gestionFilm.ajouterGenres(film1, (Genre[]) null));
   }
-
+  
+  /**
+   * Test d'ouverture de location d'un film.
+   */
   @Test
   void testOuvrirLocation() {
     assertTrue(gestionFilm.ouvrirLocation(film2));
     assertTrue(film2.isEstOuvertalocation());
   }
 
+  /**
+   * Test d'ouverture d'un film deja ouvert.
+   */
   @Test
   void testOuvrirLocationDejaOuverte() {
     assertFalse(gestionFilm.ouvrirLocation(film1));
   }
-
+  /**
+   * Test de fermeture de location.
+   */
+  
   @Test
   void testFermerLocation() {
     assertTrue(gestionFilm.fermerLocation(film1));
     assertFalse(film1.isEstOuvertalocation());
   }
 
+  /**
+   * Test de fermeture de location pour un film deja fermé.
+   */
   @Test
   void testFermerLocationDejaFermee() {
     assertFalse(gestionFilm.fermerLocation(film2));
   }
 
+  /**
+   * Test ensemble film.
+   */
   @Test
   void testEnsembleFilms() {
     Set<Film> films = gestionFilm.ensembleFilms();
@@ -165,7 +236,10 @@ public class GestionFilmTest {
     assertTrue(films.contains(film1));
     assertTrue(films.contains(film2));
   }
-
+  /**
+   * Test ensemble acteurs.
+   */
+  
   @Test
   void testEnsembleActeurs() {
     Artiste acteur = gestionFilm.creerArtiste("Ford", "Harrison", "Américain");
@@ -176,6 +250,9 @@ public class GestionFilmTest {
     assertTrue(acteurs.contains(acteur));
   }
 
+  /**
+   * Test ensemble realisateurs.
+   */
   @Test
   void testEnsembleRealisateurs() {
     Set<Artiste> realisateurs = gestionFilm.ensembleRealisateurs();
@@ -183,6 +260,9 @@ public class GestionFilmTest {
     assertTrue(realisateurs.contains(realisateur));
   }
 
+  /**
+   * Test ensemble films realisateurs.
+   */
   @Test
   void testEnsembleFilmsRealisateur() {
     Set<Film> filmsRealisateur = gestionFilm.ensembleFilmsRealisateur(realisateur);
@@ -191,6 +271,9 @@ public class GestionFilmTest {
     assertTrue(filmsRealisateur.contains(film2));
   }
 
+  /**
+   * Test ensemble films realisateurs invalide.
+   */
   @Test
   void testEnsembleFilmsRealisateurInvalide() {
     assertNull(gestionFilm.ensembleFilmsRealisateur(null));
@@ -198,6 +281,9 @@ public class GestionFilmTest {
     assertNull(gestionFilm.ensembleFilmsRealisateur(autreRealisateur));
   }
 
+  /**
+   * Test ensemble films acteurs.
+   */
   @Test
   void testEnsembleFilmsActeur() {
     Artiste acteur = gestionFilm.creerArtiste("Ford", "Harrison", "Américain");
@@ -209,7 +295,10 @@ public class GestionFilmTest {
     assertTrue(filmsActeur.contains(film1));
     assertTrue(filmsActeur.contains(film2));
   }
-
+  /**
+   * Test ensemble films acteurs non valides.
+   */
+  
   @Test
   void testEnsembleFilmsActeurInvalide() {
     assertNull(gestionFilm.ensembleFilmsActeur(null));
@@ -217,19 +306,28 @@ public class GestionFilmTest {
     assertNull(gestionFilm.ensembleFilmsActeur(acteur));
   }
 
+  /**
+   * Test de recuperation d'artistes.
+   */
   @Test
   void testGetArtiste() {
     Artiste artiste = gestionFilm.creerArtiste("Test", "Test", "Test");
     assertEquals(artiste, gestionFilm.getArtiste("Test", "Test"));
     assertNull(gestionFilm.getArtiste("Inconnu", "Inconnu"));
   }
-
+  /**
+   * Test de recuperation de film.
+   */
+  
   @Test
   void testGetFilm() {
     assertEquals(film1, gestionFilm.getFilm("Jurassic Park"));
     assertNull(gestionFilm.getFilm("Film Inexistant"));
   }
-
+  /**
+   * Test ensemble films genres.
+   */
+  
   @Test
   void testEnsembleFilmsGenre() {
     gestionFilm.ajouterGenres(film1, Genre.Action);
@@ -240,13 +338,19 @@ public class GestionFilmTest {
     assertTrue(filmsAction.contains(film1));
     assertTrue(filmsAction.contains(film2));
   }
-
+  /**
+   * Test ensemble films genres non valide.
+   */
+  
   @Test
   void testEnsembleFilmsGenreInvalide() {
     assertNull(gestionFilm.ensembleFilmsGenre(null));
     assertNull(gestionFilm.ensembleFilmsGenre(Genre.Action));  // Aucun film de ce genre
   }
-
+  /**
+   * Test de get acteurs.
+   */
+  
   @Test
   void testGetActeur() {
     Artiste acteur = gestionFilm.creerArtiste("Ford", "Harrison", "Américain");
@@ -255,20 +359,29 @@ public class GestionFilmTest {
     assertEquals(acteur, gestionFilm.getActeur("Ford", "Harrison"));
     assertNull(gestionFilm.getActeur("Inconnu", "Inconnu"));
   }
-
+  /**
+   * Test de get realisateur.
+   */
+  
   @Test
   void testGetRealisateur() {
     assertEquals(realisateur, gestionFilm.getRealisateur("Spielberg", "Steven"));
     assertNull(gestionFilm.getRealisateur("Inconnu", "Inconnu"));
   }
-
+  /**
+   * Test d'affichage valide.
+   */
+  
   @Test
   public void testSetAfficheValide() {
     String affiche = "inception.jpg";
     film1.setAffiche(affiche);
     assertEquals(affiche, film1.getAffiche());
   }
-
+  /**
+   * Test d'affichage invalide.
+   */
+  
   @Test
   public void testSetAfficheInvalide() {
     Exception exception1 = assertThrows(IllegalArgumentException.class, () ->
@@ -278,7 +391,10 @@ public class GestionFilmTest {
     Exception exception2 = assertThrows(IllegalArgumentException.class, () -> film1.setAffiche(""));
     assertEquals("L'affiche ne peut pas être vide ou nulle.", exception2.getMessage());
   }
-
+  /**
+   * Test d'affichage incluse dans toString.
+   */
+  
   @Test
   public void testAfficheIncluseDansToString() {
     String affiche = "inception.jpg";

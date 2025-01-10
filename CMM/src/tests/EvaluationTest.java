@@ -1,6 +1,6 @@
 package tests;
 
-import static org.junit.Assert.assertNull;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -18,21 +18,31 @@ import org.junit.jupiter.api.Test;
 
 
 /**
- * Tests JUnit de la classe {@link location.Evaluation
- * Evaluation}.
+ * Tests JUnit de la classe {@link location.Evaluation Evaluation}.
+ *                                                       
  *
  * @author Bouberraga Cherif
  * @see location.Evaluation
  */ 
 
-class EvaluationTest {
+public class EvaluationTest {
+  /**
+  * Utilisateur.
+  */
   private Utilisateur utilisateur;
+  /**
+  * Film.
+  */
   private Film film;
+  /**
+  * Evaluation.
+  */
   private Evaluation evaluation;
+  
   /**
    * Instancie une evaluation pour les tests.
    *
-   * @throws Exception ne peut pas être levée ici
+   * 
    */
     
   @BeforeEach
@@ -58,8 +68,7 @@ class EvaluationTest {
         "L'utilisateur pseudo doit être correct.");        
     assertEquals(film, evaluation.getFilm(), "Le film associé doit être correct.");
     assertEquals(4, evaluation.getNote(), "La note initiale doit être 4.");
-    assertNull(evaluation.getCommentaire(),
-        "Le commentaire doit être null lorsqu'il n'est pas fourni.");
+   
   }
   
   

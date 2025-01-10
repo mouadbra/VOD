@@ -1,2 +1,12 @@
-/.metadata/
+.metadata/
 CMM/posters/*.png
+.settings/
+bin/
+.classpath
+.project
+
+# Java compiled files
+*.class
+
+# General files
+*.log

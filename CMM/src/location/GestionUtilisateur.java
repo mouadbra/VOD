@@ -129,7 +129,7 @@ public class GestionUtilisateur implements Serializable {
   /**
    * Déconnecte l'utilisateur actuellement connecté.
    *
-   * @throws NonConnecteException si aucun utilisateur n'est connecté.
+   *
    */
   public void deconnecterUtilisateur() {
     utilisateurConnecte.setEstConnecte(false); 

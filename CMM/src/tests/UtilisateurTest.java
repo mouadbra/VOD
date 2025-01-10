@@ -20,9 +20,9 @@ import org.junit.jupiter.api.Test;
 
 
 /**
- * Tests unitaires pour la classe Utilisateur.
+ * Tests unitaires pour la classe Utilisateur{@link location.Utilisateur Utilisateur}.
  */
-class UtilisateurTest {
+public class UtilisateurTest {
 
   private Utilisateur utilisateur;
   private InformationPersonnelle infoPersonnelle;
