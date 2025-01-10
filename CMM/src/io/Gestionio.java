@@ -10,11 +10,14 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import location.Artiste;
+import location.Evaluation;
 import location.Film;
 import location.GestionFilm;
 import location.GestionUtilisateur;
+import location.Gestionnaire;
 import location.Utilisateur;
 
 /**
@@ -28,17 +31,20 @@ public class Gestionio implements InterSauvegarde, Serializable {
   private static final long serialVersionUID = 1L;
   private static final String POSTERS_DIRECTORY = "posters/";
     
-  private GestionUtilisateur gestionUtilisateur;
+  //private GestionUtilisateur gestionUtilisateur;
+  GestionUtilisateur gestionUtilisateur = GestionUtilisateur.getInstance();
   private GestionFilm gestionFilm;
-  //private Gestionnaire gestion;
+  private Gestionnaire gestion;
   
   /**
    * Constructeur .
    */
-  public Gestionio(GestionUtilisateur gestionUtilisateur, GestionFilm gestionFilm) {
-    this.gestionUtilisateur = gestionUtilisateur;
+  public Gestionio(GestionUtilisateur gestionUtilisateur, 
+      GestionFilm gestionFilm, Gestionnaire gestion) {
+    //this.gestionUtilisateur = gestionUtilisateur;
     this.gestionFilm = gestionFilm;
-    //this.gestion = gestion;
+    this.gestionUtilisateur = GestionUtilisateur.getInstance();
+    this.gestion = gestion;
     
         
     new File(POSTERS_DIRECTORY).mkdirs();
@@ -46,6 +52,10 @@ public class Gestionio implements InterSauvegarde, Serializable {
 
   @Override
     public void sauvegarderDonnees(String nomFichier) throws IOException {
+    Set<Utilisateur> utilisateursaSauvegarder = gestionUtilisateur.getUtilisateurs();
+    for (Utilisateur u : utilisateursaSauvegarder) {
+      System.out.println("- Utilisateur: " + u.getPseudo());
+    }
     try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nomFichier))) {
       HashMap<String, Object> donnees = new HashMap<>();
             
@@ -69,18 +79,28 @@ public class Gestionio implements InterSauvegarde, Serializable {
       }
       donnees.put("films", films);
 
-      // Save other data
-      donnees.put("artistes", gestionFilm.getArtistes());
-      donnees.put("utilisateurs", gestionUtilisateur.getUtilisateurs());
       
-      /*Map<Film, Set<Evaluation>> evaluations = new HashMap<>();
-      for (Film film : films) {
-          Set<Evaluation> evals = gestion.ensembleEvaluationsFilm(film);
-          if (evals != null) {
-              evaluations.put(film, evals);
-          }
+      donnees.put("artistes", gestionFilm.getArtistes());
+      
+      Set<Utilisateur> utilisateurs = gestionUtilisateur.getUtilisateurs();
+
+      if (utilisateurs != null) {
+        for (Utilisateur u : utilisateurs) {
+          System.out.println("Utilisateur trouvé : " + u.getPseudo());
+        }
       }
-      donnees.put("evaluations", evaluations); */
+      donnees.put("utilisateurs", gestionUtilisateur.getUtilisateurs());
+      System.out.println("Sauvegarde - Contenu de la map : " + donnees.get("utilisateurs"));
+      
+      
+      Map<Film, Set<Evaluation>> evaluations = new HashMap<>();
+      for (Film film : films) {
+        Set<Evaluation> evals = gestion.ensembleEvaluationsFilm(film);
+        if (evals != null) {
+          evaluations.put(film, evals);
+        }
+      }
+      donnees.put("evaluations", evaluations); 
 
       oos.writeObject(donnees);
     }
@@ -92,6 +112,7 @@ public class Gestionio implements InterSauvegarde, Serializable {
       try {
         @SuppressWarnings("unchecked")
                 HashMap<String, Object> donnees = (HashMap<String, Object>) ois.readObject();
+        
 
         @SuppressWarnings("unchecked")
                 Set<Artiste> artistes = (Set<Artiste>) donnees.get("artistes");
@@ -115,6 +136,34 @@ public class Gestionio implements InterSauvegarde, Serializable {
                 Set<Utilisateur> utilisateurs = (Set<Utilisateur>) donnees.get("utilisateurs");
         gestionUtilisateur.setUtilisateurs(utilisateurs);
         
+        if (utilisateurs != null) {
+          gestionUtilisateur.setUtilisateurs(utilisateurs);
+        } else {
+          System.out.println("Aucun utilisateur trouvé dans le fichier");
+        }
+        @SuppressWarnings("unchecked")
+        Map<Film, Set<Evaluation>> evaluations = (Map<Film, Set<Evaluation>>)
+            donnees.get("evaluations");
+        if (evaluations != null) {
+          System.out.println("Chargement des évaluations...");
+          for (Map.Entry<Film, Set<Evaluation>> entry : evaluations.entrySet()) {
+            Film film = entry.getKey();
+            Set<Evaluation> filmEvaluations = entry.getValue();
+                
+            Film filmExistant = gestionFilm.getFilm(film.getTitre());
+            if (filmExistant != null && filmEvaluations != null) {
+              for (Evaluation eval : filmEvaluations) {
+                String pseudoUtilisateur = eval.getUtilisateurPseudo();
+                Utilisateur utilisateur =
+                    gestionUtilisateur.getUtilisateurParPseudo(pseudoUtilisateur);
+                filmExistant.ajouterEvaluation(utilisateur, eval);
+              }
+            }
+          }
+          System.out.println("Évaluations chargées avec succès");
+        } else {
+          System.out.println("Aucune évaluation trouvée dans le fichier");
+        }
         
 
       } catch (ClassNotFoundException e) {

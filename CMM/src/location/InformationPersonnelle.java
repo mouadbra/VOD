@@ -1,5 +1,6 @@
 package location;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -8,12 +9,12 @@ import java.util.Objects;
  *
  * @author Eric Cariou
  */
-public final class InformationPersonnelle implements java.io.Serializable {
+public final class InformationPersonnelle implements Serializable {
   
   /**
    * Identifiant de sérialisation.
    */
-  private static final long serialVersionUID = 4026408353251835506L;
+  private static final long serialVersionUID = 1L;
   
   /**
    * Le nom de la personne (ne peut pas être modifié).

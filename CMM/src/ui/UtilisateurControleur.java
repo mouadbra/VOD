@@ -1,18 +1,21 @@
 package ui;
 
 import java.util.Set;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import location.Artiste;
+import javafx.scene.image.Image;
 import location.Evaluation;
 import location.Film;
 import location.Genre;
@@ -24,6 +27,8 @@ import location.LocationException;
 import location.NonConnecteException;
 import location.Utilisateur;
 import ui.AdministrationControleur;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 
 
@@ -365,6 +370,11 @@ public class UtilisateurControleur {
       afficherMessageErreur("Film introuvable !");
       return;
     }
+    
+    
+    if (gestionnaireUtilisateur.getUtilisateurConnecte() == null) {
+      afficherMessageErreur("Vous devez être connecté pour affiche l'évaluation !");
+    }
 
     Utilisateur utilisateur = gestionnaireUtilisateur.getUtilisateurConnecte();
     Evaluation evaluation = utilisateur.getEvaluationParFilm(film);
@@ -565,6 +575,12 @@ public class UtilisateurControleur {
     if (commentaire.isEmpty()) {
       commentaire = null; // Traiter les commentaires vides comme null
     }
+    
+    
+    if (gestionnaireUtilisateur.getUtilisateurConnecte() == null) {
+      afficherMessageErreur("Vous devez être connecté pour évaluer un film !");
+    }
+
 
 
     try {
@@ -718,7 +734,11 @@ public class UtilisateurControleur {
     if (commentaire.isEmpty()) {
       commentaire = null; // Traiter les commentaires vides comme null
     }      
-
+       
+    if (gestionnaireUtilisateur.getUtilisateurConnecte() == null) {
+      afficherMessageErreur("Vous devez être connecté pour modifier une évaluation !");
+      return;
+    }
     try {
       Evaluation nouvelleEvaluation = new Evaluation(note, commentaire,
           gestionnaireUtilisateur.getUtilisateurConnecte(), film);
@@ -781,20 +801,18 @@ public class UtilisateurControleur {
   @FXML
   void actionSelectionFilm(MouseEvent event) {
     String filmSelectionne = listeFilms.getSelectionModel().getSelectedItem();
-      
+
     if (filmSelectionne != null) {
       afficherMessageSucces("Film sélectionné : " + filmSelectionne);
-          
-      // Extraire le titre du film
-      String titre = filmSelectionne.split(" \\(")[0]; 
-          
-      // Récupérer l'objet Film
+
+      String titre = filmSelectionne.split(" \\(")[0];
       Film film = gestionnaire.getFilm(titre);
+
       if (film == null) {
         afficherMessageErreur("Film introuvable !");
         return;
       }
-
+      
       // Mise à jour des champs avec les détails du film
       entreeTitreFilm.setText(film.getTitre());
       entreeAnneeFilm.setText(String.valueOf(film.getAnnee()));
@@ -807,14 +825,33 @@ public class UtilisateurControleur {
                                                  .map(Genre::name)
                                                  .toList());
       entreeGenresFilm.setText(genres);
-
-      // Mettre à jour la checkbox pour indiquer si le film est louable
       checkFilmLouable.setSelected(film.isEstOuvertalocation());
-
-      // Mettre à jour la liste des évaluations
       miseAjourListeEvaluations(film);
+
+
+      // Récupérer l'affiche
+      String cheminAffiche = film.getAffiche();
+      if (cheminAffiche != null && !cheminAffiche.isEmpty()) {
+        try {
+          Stage stage = new Stage();
+          stage.setTitle("Affiche de " + film.getTitre());
+
+          ImageView imageView = new ImageView(new Image("file:" + cheminAffiche));
+          imageView.setPreserveRatio(true);
+          imageView.setFitHeight(400);
+
+          Scene scene = new Scene(new StackPane(imageView), 400, 600);
+          stage.setScene(scene);
+          stage.show();
+        } catch (Exception e) {
+          afficherMessageErreur("Impossible d'afficher l'affiche !");
+        }
+      } else {
+        //        afficherMessageErreur("Aucune affiche disponible pour ce film.");
+      }
     }
   }
+
   
   /**
    * Fonction pour remplire la liste des genres.
@@ -832,7 +869,7 @@ public class UtilisateurControleur {
       }
       afficherMessageSucces("Liste des genres mise à jour !");
     } else {
-      afficherMessageErreur("Aucun genre de film trouvé !");
+      //      afficherMessageErreur("Aucun genre de film trouvé !");
     }
   }
 
@@ -841,18 +878,27 @@ public class UtilisateurControleur {
   
   @FXML
   void initialize() {
-    gestionnaireFilm = AdministrationControleur.gestionFilm;
-    gestionnaireUtilisateur = new GestionUtilisateur();
-    gestionnaire = new Gestionnaire(gestionnaireUtilisateur, gestionnaireFilm);
-    listeNoteEvaluation.getItems().addAll(0, 1, 2, 3, 4, 5);
+	  gestionnaireFilm = AdministrationControleur.gestionFilm;
+	  //gestionnaireUtilisateur = new GestionUtilisateur();
+	  gestionnaireUtilisateur = GestionUtilisateur.getInstance();
+	  gestionnaire = new Gestionnaire(gestionnaireUtilisateur, gestionnaireFilm);
+	  listeNoteEvaluation.getItems().addAll(0, 1, 2, 3, 4, 5);
+
 
 
   }
   
   
+
+
   private void afficherMessageErreur(String message) {
-    System.err.println("Erreur : " + message);
+      Alert alert = new Alert(AlertType.ERROR); // Définit le type de la boîte de dialogue comme "Erreur"
+      alert.setTitle("Erreur");
+      alert.setHeaderText(null); // Pas de texte d'en-tête
+      alert.setContentText(message); // Le message d'erreur à afficher
+      alert.showAndWait(); // Affiche la boîte de dialogue et attend que l'utilisateur la ferme
   }
+
 
   private void afficherMessageSucces(String message) {
     System.out.println("Succès : " + message);
@@ -898,7 +944,7 @@ public class UtilisateurControleur {
         listeEvaluations.getItems().add(item);
       }
     } else {
-      afficherMessageErreur("Aucune évaluation pour ce film.");
+//      afficherMessageErreur("Aucune évaluation pour ce film.");
     }
   }
 
