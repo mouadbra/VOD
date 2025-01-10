@@ -4,18 +4,20 @@ import java.util.Set;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import location.Artiste;
-import javafx.scene.image.Image;
 import location.Evaluation;
 import location.Film;
 import location.Genre;
@@ -26,9 +28,8 @@ import location.InformationPersonnelle;
 import location.LocationException;
 import location.NonConnecteException;
 import location.Utilisateur;
-import ui.AdministrationControleur;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
+//import ui.AdministrationControleur;
+
 
 
 
@@ -150,7 +151,7 @@ public class UtilisateurControleur {
       for (Artiste acteur : acteurs) {
         listeArtistes.getItems().add(acteur.getNom() + " " + acteur.getPrenom());
       }
-      afficherMessageSucces("Acteurs affichés pour le film sélectionné.");
+      //      afficherMessageSucces("Acteurs affichés pour le film sélectionné.");
       labelListeArtistes.setText("les Acteurs du Film Sélecetionne");
 
     }
@@ -168,7 +169,7 @@ public class UtilisateurControleur {
       for (Artiste acteur : acteurs) {
         listeArtistes.getItems().add(acteur.getNom() + " " + acteur.getPrenom());
       }
-      afficherMessageSucces("Liste des acteurs mise à jour.");
+      //      afficherMessageSucces("Liste des acteurs mise à jour.");
       labelListeArtistes.setText("tous les acteurs");
 
     }
@@ -186,7 +187,7 @@ public class UtilisateurControleur {
       for (Artiste realisateur : realisateurs) {
         listeArtistes.getItems().add(realisateur.getNom() + " " + realisateur.getPrenom());
       }
-      afficherMessageSucces("Liste des réalisateurs mise à jour.");
+      //      afficherMessageSucces("Liste des réalisateurs mise à jour.");
       labelListeArtistes.setText("tous les Réalisateurs");
 
     }
@@ -254,7 +255,7 @@ public class UtilisateurControleur {
       for (Film film : films) {
         listeFilms.getItems().add(film.getTitre() + " (" + film.getAnnee() + ")");
       }
-      afficherMessageSucces("Liste des films du réalisateur mise à jour.");
+      //      afficherMessageSucces("Liste des films du réalisateur mise à jour.");
       labelListeFilms.setText("les Films pour le Réalisateur Sélectionne");
 
     }
@@ -286,7 +287,7 @@ public class UtilisateurControleur {
       for (Film film : films) {
         listeFilms.getItems().add(film.getTitre() + " (" + film.getAnnee() + ")");
       }
-      afficherMessageSucces("Liste des films du réalisateur mise à jour.");
+      //      afficherMessageSucces("Liste des films du réalisateur mise à jour.");
       labelListeFilms.setText("les Films pour l'Acteur Sélectionne");
 
           
@@ -313,7 +314,7 @@ public class UtilisateurControleur {
       for (Film film : films) {
         listeFilms.getItems().add(film.getTitre() + " (" + film.getAnnee() + ")");
       }
-      afficherMessageSucces("Liste des films du genre mise à jour.");
+      //      afficherMessageSucces("Liste des films du genre mise à jour.");
       labelListeFilms.setText("les Films pour le genre Sélectionne");
 
     }
@@ -349,7 +350,7 @@ public class UtilisateurControleur {
       for (Film film : films) {
         listeFilms.getItems().add(film.getTitre() + " (" + film.getAnnee() + ")");
       }
-      afficherMessageSucces("Liste des films du réalisateur mise à jour.");
+      //      afficherMessageSucces("Liste des films du réalisateur mise à jour.");
       labelListeFilms.setText("les Films pour le Réalisateur Sélectionne");
 
     }
@@ -400,7 +401,7 @@ public class UtilisateurControleur {
       for (Artiste artiste : artistes) {
         listeArtistes.getItems().add(artiste.getNom() + " " + artiste.getPrenom());
       }
-      afficherMessageSucces("Liste des artistes mise à jour.");
+      //      afficherMessageSucces("Liste des artistes mise à jour.");
       labelListeArtistes.setText("Tous les Artistes");
 
     }
@@ -418,7 +419,7 @@ public class UtilisateurControleur {
       for (Film film : films) {
         listeFilms.getItems().add(film.getTitre() + " (" + film.getAnnee() + ")");
       }
-      afficherMessageSucces("Liste des films mise à jour.");
+      //      afficherMessageSucces("Liste des films mise à jour.");
       remplirListeGenresFilm(); 
       labelListeFilms.setText("tous les Films");
 
@@ -650,11 +651,9 @@ public class UtilisateurControleur {
   
   @FXML
   void actionBoutonInscription(ActionEvent event) {
-    String pseudo = entreePseudoUtilisateur.getText();
-    String motDePasse = entreeMotDePasseUtilisateur.getText();
+    
     String nom = entreeNomUtilisateur.getText();
     String prenom = entreePrenomUtilisateur.getText();
-    String adresse = entreeAdresseUtilisateur.getText();
     int age;
     try {
       age = Integer.parseInt(entreeAgeUtilisateur.getText());
@@ -662,7 +661,18 @@ public class UtilisateurControleur {
       afficherMessageErreur("L'âge doit être un nombre valide !");
       return;
     }
-
+    // Validation du prénom
+    if (!prenom.matches("[a-zA-ZÀ-ÖØ-öø-ÿ]+")) { // Inclut les lettres accentuées
+      afficherMessageErreur("Le prénom ne doit contenir que des lettres alphabétiques !");
+      return;
+    }
+    if (!nom.matches("[a-zA-ZÀ-ÖØ-öø-ÿ]+")) { // Inclut les lettres accentuées
+      afficherMessageErreur("Le nom ne doit contenir que des lettres alphabétiques !");
+      return;
+    }
+    String adresse = entreeAdresseUtilisateur.getText();
+    String pseudo = entreePseudoUtilisateur.getText();
+    String motDePasse = entreeMotDePasseUtilisateur.getText();
     InformationPersonnelle info = new InformationPersonnelle(nom, prenom, adresse, age);
     int resultat = gestionnaire.inscription(pseudo, motDePasse, info);
 
@@ -760,7 +770,7 @@ public class UtilisateurControleur {
   void actionSelectionArtiste(MouseEvent event) {
     String artisteSelectionne = listeArtistes.getSelectionModel().getSelectedItem();
     if (artisteSelectionne != null) {
-      afficherMessageSucces("Artiste sélectionné : " + artisteSelectionne);
+      //      afficherMessageSucces("Artiste sélectionné : " + artisteSelectionne);
     }
   }
 
@@ -791,9 +801,9 @@ public class UtilisateurControleur {
     listeNoteEvaluation.setValue(Integer.parseInt(noteStr));
     texteCommentaire.setText(commentaire != null ? commentaire : ""); // Si null, vider le champ
 
-    afficherMessageSucces("Évaluation sélectionnée : Auteur=" + auteur 
-            + ", Note=" + noteStr + ", Commentaire=" 
-            + (commentaire != null ? commentaire : "Aucun commentaire"));
+    //    afficherMessageSucces("Évaluation sélectionnée : Auteur=" + auteur 
+    //            + ", Note=" + noteStr + ", Commentaire=" 
+    //            + (commentaire != null ? commentaire : "Aucun commentaire"));
   }
 
 
@@ -803,7 +813,7 @@ public class UtilisateurControleur {
     String filmSelectionne = listeFilms.getSelectionModel().getSelectedItem();
 
     if (filmSelectionne != null) {
-      afficherMessageSucces("Film sélectionné : " + filmSelectionne);
+      //      afficherMessageSucces("Film sélectionné : " + filmSelectionne);
 
       String titre = filmSelectionne.split(" \\(")[0];
       Film film = gestionnaire.getFilm(titre);
@@ -867,7 +877,7 @@ public class UtilisateurControleur {
       for (Genre genre : genres) {
         listeGenresFilm.getItems().add(genre.name()); // Ajouter les genres par leur nom
       }
-      afficherMessageSucces("Liste des genres mise à jour !");
+      //      afficherMessageSucces("Liste des genres mise à jour !");
     } else {
       //      afficherMessageErreur("Aucun genre de film trouvé !");
     }
@@ -878,11 +888,11 @@ public class UtilisateurControleur {
   
   @FXML
   void initialize() {
-	  gestionnaireFilm = AdministrationControleur.gestionFilm;
-	  //gestionnaireUtilisateur = new GestionUtilisateur();
-	  gestionnaireUtilisateur = GestionUtilisateur.getInstance();
-	  gestionnaire = new Gestionnaire(gestionnaireUtilisateur, gestionnaireFilm);
-	  listeNoteEvaluation.getItems().addAll(0, 1, 2, 3, 4, 5);
+    gestionnaireFilm = AdministrationControleur.gestionFilm;
+    //gestionnaireUtilisateur = new GestionUtilisateur();
+    gestionnaireUtilisateur = GestionUtilisateur.getInstance();
+    gestionnaire = new Gestionnaire(gestionnaireUtilisateur, gestionnaireFilm);
+    listeNoteEvaluation.getItems().addAll(0, 1, 2, 3, 4, 5);
 
 
 
@@ -892,16 +902,19 @@ public class UtilisateurControleur {
 
 
   private void afficherMessageErreur(String message) {
-      Alert alert = new Alert(AlertType.ERROR); // Définit le type de la boîte de dialogue comme "Erreur"
-      alert.setTitle("Erreur");
-      alert.setHeaderText(null); // Pas de texte d'en-tête
-      alert.setContentText(message); // Le message d'erreur à afficher
-      alert.showAndWait(); // Affiche la boîte de dialogue et attend que l'utilisateur la ferme
+    Alert alert = new Alert(AlertType.ERROR); 
+    alert.setTitle("Erreur");
+    alert.setHeaderText(null); 
+    alert.setContentText(message); 
+    alert.showAndWait(); 
   }
 
 
   private void afficherMessageSucces(String message) {
-    System.out.println("Succès : " + message);
+    Alert alert = new Alert(AlertType.INFORMATION); 
+    alert.setHeaderText(null); // Pas de texte d'en-tête
+    alert.setContentText(message); // Le message de succès à afficher
+    alert.showAndWait(); 
   }
 
   private void miseAjourFilmsLoues() {
@@ -944,7 +957,7 @@ public class UtilisateurControleur {
         listeEvaluations.getItems().add(item);
       }
     } else {
-//      afficherMessageErreur("Aucune évaluation pour ce film.");
+      //      afficherMessageErreur("Aucune évaluation pour ce film.");
     }
   }
 

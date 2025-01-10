@@ -1,6 +1,7 @@
 package location;
 
 
+//import java.awt.desktop.SystemEventListener;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -68,8 +69,12 @@ public class Gestionnaire implements InterUtilisateur, Serializable {
   public boolean connexion(String pseudo, String mdp) {
     Utilisateur utilisateur = gestionUtilisateur.getUtilisateurParPseudo(pseudo);
     if (utilisateur == null) {
+      System.out.println("Utilisateur null !");
+
       return false; 
     } else {
+      System.out.println("Utilisateur non null !");
+
       gestionUtilisateur.connecterUtilisateur(utilisateur);
       return utilisateur.getMotDePasse().equals(mdp);
     }

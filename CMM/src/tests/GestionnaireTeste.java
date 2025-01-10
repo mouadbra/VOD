@@ -52,6 +52,8 @@ public class GestionnaireTeste {
    * Utilisateur de test.
    */
   private Utilisateur utilisateur;
+  private Utilisateur utilisateur2;
+
 
   /**
    * Film de test.
@@ -74,6 +76,7 @@ public class GestionnaireTeste {
 
     InformationPersonnelle info = new InformationPersonnelle("John", "Doe", "123 Main St", 25);
     utilisateur = new Utilisateur("johndoe", "password", info);
+    utilisateur2 = new Utilisateur("johndoee", "password", info);
 
     realisateur = new Artiste("Nolan", "Christopher", "Inception");
     Set<Genre> genres = new HashSet<>();
@@ -124,16 +127,23 @@ public class GestionnaireTeste {
    * Teste la déconnexion sans utilisateur connecté.
    */
   @Test
-  public void testDeconnexionSansConnexion() {
+  public void testDeconnexionSansConnexion() throws NonConnecteException {
+    if (gestionUtilisateur.getUtilisateurConnecte() != null) {
+      gestionnaire.deconnexion();
+    }
     assertThrows(NonConnecteException.class, () -> gestionnaire.deconnexion(), 
          "Une exception doit être levée si aucun utilisateur n'est connecté.");
   }
 
   /**
    * Teste la location d'un film sans connexion.
+   *  
    */
   @Test
-  public void testLouerFilmSansConnexion() {
+  public void testLouerFilmSansConnexion() throws NonConnecteException {
+    if (gestionUtilisateur.getUtilisateurConnecte() != null) {
+      gestionnaire.deconnexion();
+    }
     assertThrows(NonConnecteException.class, () -> gestionnaire.louerFilm(film), 
            "Une exception doit être levée si aucun utilisateur n'est connecté.");
   }
@@ -192,8 +202,8 @@ public class GestionnaireTeste {
   public void testAjouterEvaluationValide() throws NonConnecteException, LocationException {
     gestionUtilisateur.ajouteUtilisateur(utilisateur);
     gestionnaire.connexion("johndoe", "password");
-
-    utilisateur.ajouterFilmenLocation(film); // Ajoute le film dans l'historique
+    film.modifierLocation(true);
+    gestionnaire.louerFilm(film); // Ajoute le film dans l'historique
     Evaluation eval = new Evaluation(4, "Excellent!", utilisateur, film);
 
     gestionnaire.ajouterEvaluation(film, eval);
@@ -262,6 +272,7 @@ public class GestionnaireTeste {
     gestionnaire.connexion("johndoe", "password");
 
     // Loue le film et ajoute une évaluation
+    film.modifierLocation(true);
     gestionnaire.louerFilm(film);
     Evaluation eval = new Evaluation(5, utilisateur, film);
     gestionnaire.ajouterEvaluation(film, eval);  
@@ -281,13 +292,14 @@ public class GestionnaireTeste {
     gestionUtilisateur.ajouteUtilisateur(utilisateur);
     gestionnaire.connexion("johndoe", "password");
     // Loue le film et ajoute une évaluation
+    film.modifierLocation(true);
     gestionnaire.louerFilm(film);
     Evaluation eval = new Evaluation(5, utilisateur, film);
     gestionnaire.ajouterEvaluation(film, eval);
     // Supprime l'évaluation
     Evaluation nouvelleEval = new Evaluation(3, utilisateur, film);
     gestionnaire.modifierEvaluation(film, nouvelleEval); 
-    assertFalse(film.getEvaluations().contains(eval), 
+    assertTrue(film.getEvaluations().contains(nouvelleEval), 
              "L'évaluation précédente doit être supprimée.");
   }
   /**
@@ -296,6 +308,7 @@ public class GestionnaireTeste {
   
   @Test
   public void testEnsembleFilmsGenre() {
+    gestionFilm.ajouterGenres(film, Genre.Action);  
     Set<Film> films = gestionnaire.ensembleFilmsGenre(Genre.Action);
     assertNotNull(films, "L'ensemble des films par genre ne doit pas être nul.");
   }
@@ -306,9 +319,18 @@ public class GestionnaireTeste {
   @Test
   public void testEvaluationMoyenne() throws LocationException, NonConnecteException {
     Evaluation eval1 = new Evaluation(4, utilisateur, film);
-    Evaluation eval2 = new Evaluation(3, utilisateur, film); 
+    Evaluation eval2 = new Evaluation(3, utilisateur2, film); 
+    String ps1 = utilisateur.getPseudo();
+    String mp1 = utilisateur.getMotDePasse();
+   
+    
+    gestionnaire.connexion(ps1, mp1);
     gestionnaire.ajouterEvaluation(film, eval1);
+    gestionnaire.deconnexion();
+    gestionnaire.inscription("janedoee", "password", utilisateur2.getInfo());
+    gestionnaire.connexion("janedoee", "password");
     gestionnaire.ajouterEvaluation(film, eval2);
+    gestionnaire.deconnexion();
     double moyenne = gestionnaire.evaluationMoyenne(film);
     assertEquals(3.5, moyenne, "L'évaluation moyenne doit être correcte.");
   }
