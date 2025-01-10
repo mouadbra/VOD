@@ -68,7 +68,7 @@ public class GestionnaireTeste {
    */
   @BeforeEach
   public void setUp() {
-    gestionUtilisateur = new GestionUtilisateur();
+    this.gestionUtilisateur = GestionUtilisateur.getInstance();
     gestionFilm = new GestionFilm();
     gestionnaire = new Gestionnaire(gestionUtilisateur, gestionFilm);
 
