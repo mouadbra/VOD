@@ -1,6 +1,6 @@
 
 # VOD
 Java application for a movie rental system.
-![Administration](images/shot1.png)
-![Users](images/shot2.png)
+![Administration](images/shot1.PNG)
+![Users](images/shot2.PNG)
 
